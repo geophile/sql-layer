@@ -31,6 +31,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
 
@@ -105,7 +106,19 @@ public class Spatial
 
     static
     {
-        // java.util.logging.Logger.getLogger("").setLevel(Level.FINE);
+        Logger geophileLogger = Logger.getLogger("");
+        String geophileLogging = System.getProperty("geophile.logging");
+        Level level;
+        if (geophileLogging == null) {
+            level = Level.OFF;
+        } else {
+            try {
+                level = Level.parse(geophileLogging.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                level = Level.OFF;
+            }
+        }
+        geophileLogger.setLevel(level);
     }
 
     public static final int LAT_LON_DIMENSIONS = 2;
