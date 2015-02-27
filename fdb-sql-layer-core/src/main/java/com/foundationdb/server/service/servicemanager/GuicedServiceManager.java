@@ -17,8 +17,6 @@
 
 package com.foundationdb.server.service.servicemanager;
 
-import com.foundationdb.server.error.ErrorCode;
-import com.foundationdb.server.error.StartupFailureException;
 import com.foundationdb.sql.LayerInfoInterface;
 import com.foundationdb.server.service.Service;
 import com.foundationdb.server.service.ServiceManager;
@@ -39,16 +37,14 @@ import com.foundationdb.server.store.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public final class GuicedServiceManager implements ServiceManager, JmxManageable {
+public final class GuicedServiceManager implements ServiceManager {
     // ServiceManager interface
 
     @Override
@@ -60,7 +56,6 @@ public final class GuicedServiceManager implements ServiceManager, JmxManageable
     public synchronized void startServices() {
         logger.info("Starting services.");
         state = State.STARTING;
-        getJmxRegistryService().register(this);
         boolean ok = false;
         try {
             for (Class<?> directlyRequiredClass : guicer.directlyRequiredClasses()) {
@@ -163,13 +158,6 @@ public final class GuicedServiceManager implements ServiceManager, JmxManageable
         return guicer.serviceIsStarted(serviceClass);
     }
 
-    // JmxManageable interface
-
-    @Override
-    public JmxObjectInfo getJmxObjectInfo() {
-        return new JmxObjectInfo("Services", bean, ServiceManagerMXBean.class);
-    }
-
 
     // GuicedServiceManager interface
 
@@ -179,10 +167,6 @@ public final class GuicedServiceManager implements ServiceManager, JmxManageable
 
     public GuicedServiceManager(BindingsConfigurationProvider bindingsConfigurationProvider) {
         DefaultServiceConfigurationHandler configurationHandler = new DefaultServiceConfigurationHandler();
-
-        // Install the default, no-op JMX registry; this is a special case, since we want to use it
-        // as we start each service.
-        configurationHandler.bind(JmxRegistryService.class.getName(), NoOpJmxRegistry.class.getName(), null);
 
         // Next, load each element in the provider...
         for (BindingsConfigurationLoader loader : bindingsConfigurationProvider.loaders()) {
@@ -635,28 +619,6 @@ public final class GuicedServiceManager implements ServiceManager, JmxManageable
         private static final String BIND = "bind:";
         private static final String REQUIRE = "require:";
         private static final String PRIORITIZE = "prioritize:";
-    }
-
-    public static class NoOpJmxRegistry implements JmxRegistryService {
-        @Override
-        public ObjectName register(JmxManageable service) {
-            try {
-                return new ObjectName("com.foundationdb:type=DummyPlaceholder" + counter.incrementAndGet());
-            } catch (MalformedObjectNameException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public void unregister(ObjectName registeredObject) {
-        }
-
-        @Override
-        public void unregister(String serviceName) {
-        }
-
-        // object state
-        private final AtomicInteger counter = new AtomicInteger();
     }
 
     private static final class InvalidDefaultServicesConfigException extends RuntimeException {
