@@ -3,7 +3,6 @@
     com.foundationdb.server.service.config.ConfigurationService : com.foundationdb.server.service.config.ConfigurationServiceImpl
     com.foundationdb.server.service.dxl.DXLService : com.foundationdb.server.service.dxl.DXLServiceImpl
     com.foundationdb.server.service.jmx.JmxRegistryService : com.foundationdb.server.service.jmx.JmxRegistryServiceImpl
-    com.foundationdb.server.service.log4jconfig.Log4JConfigurationService : com.foundationdb.server.service.log4jconfig.Log4JConfigurationServiceImpl
     com.foundationdb.server.service.session.SessionService : com.foundationdb.server.service.session.SessionServiceImpl
     com.foundationdb.server.service.stats.StatisticsService : com.foundationdb.server.service.stats.StatisticsServiceImpl
     com.foundationdb.server.service.monitor.MonitorService : com.foundationdb.server.service.monitor.MonitorServiceImpl

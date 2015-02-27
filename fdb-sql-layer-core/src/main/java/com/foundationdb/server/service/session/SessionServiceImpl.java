@@ -18,7 +18,6 @@
 package com.foundationdb.server.service.session;
 
 import com.foundationdb.server.service.Service;
-import com.foundationdb.server.service.jmx.JmxManageable;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class SessionServiceImpl implements SessionService, Service, SessionEventListener {
