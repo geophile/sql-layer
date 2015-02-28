@@ -136,8 +136,9 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
      * 5) Remove group index row counts
      * 6) Metadata stored using blob layer
      * 7) Tuple encoding for boolean true
+     * 8) Removed RowData storage format
      */
-    private static final long CURRENT_DATA_VERSION = 7;
+    private static final long CURRENT_DATA_VERSION = 8;
     /**
      * 1) Initial directory based
      * 2) Online metadata support
