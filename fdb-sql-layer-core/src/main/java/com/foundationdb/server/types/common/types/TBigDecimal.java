@@ -31,8 +31,6 @@ import com.foundationdb.sql.types.TypeId;
 import com.foundationdb.util.AkibanAppender;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.sql.Types;
 
 public class TBigDecimal extends TClassBase {

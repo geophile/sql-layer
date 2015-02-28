@@ -34,8 +34,6 @@ import com.foundationdb.ais.util.TableChange;
 import com.foundationdb.qp.operator.QueryContext;
 import com.foundationdb.server.error.NoSuchTableException;
 import com.foundationdb.server.error.NoSuchTableIdException;
-import com.foundationdb.server.error.RowDefNotFoundException;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.service.dxl.OnlineDDLMonitor;
 import com.foundationdb.server.service.session.Session;
 import com.foundationdb.server.store.format.StorageFormatRegistry;

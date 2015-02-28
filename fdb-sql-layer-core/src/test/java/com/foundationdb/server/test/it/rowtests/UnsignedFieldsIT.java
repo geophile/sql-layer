@@ -18,7 +18,6 @@
 package com.foundationdb.server.test.it.rowtests;
 
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.test.it.ITBase;
 import com.foundationdb.server.types.value.ValueSources;
 import org.junit.Assert;

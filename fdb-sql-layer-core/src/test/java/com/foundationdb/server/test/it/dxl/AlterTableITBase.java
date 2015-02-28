@@ -27,7 +27,6 @@ import com.foundationdb.ais.model.TableName;
 import com.foundationdb.ais.util.TableChange;
 import com.foundationdb.qp.operator.QueryContext;
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.test.it.ITBase;
 import com.foundationdb.server.types.value.ValueSources;
 import org.junit.After;

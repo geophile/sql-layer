@@ -19,8 +19,6 @@ package com.foundationdb.server.test.it.bugs.bug1112940;
 
 import com.foundationdb.qp.row.Row;
 import com.foundationdb.server.TableStatus;
-import com.foundationdb.server.api.dml.ConstantColumnSelector;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.error.DuplicateKeyException;
 import com.foundationdb.server.test.it.ITBase;
 import org.junit.Test;

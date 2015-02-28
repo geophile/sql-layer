@@ -22,8 +22,6 @@ import java.util.List;
 import com.foundationdb.qp.row.Row;
 import com.foundationdb.qp.row.ValuesHolderRow;
 import com.foundationdb.qp.rowtype.RowType;
-import com.foundationdb.server.api.dml.scan.NiceRow;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.store.Store;
 import com.foundationdb.server.types.value.Value;
 

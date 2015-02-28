@@ -19,7 +19,6 @@ package com.foundationdb.server;
 
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.qp.virtualadapter.VirtualScanFactory;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.service.session.Session;
 
 public interface TableStatusCache {

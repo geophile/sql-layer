@@ -20,7 +20,6 @@ package com.foundationdb.server.test.it.bugs.bug696096;
 import java.text.MessageFormat;
 
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.error.DuplicateKeyException;
 import com.foundationdb.server.error.ErrorCode;
 import com.foundationdb.server.error.InvalidOperationException;
