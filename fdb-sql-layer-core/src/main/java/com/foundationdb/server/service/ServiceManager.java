@@ -22,7 +22,6 @@ import com.foundationdb.server.error.ServiceAlreadyStartedException;
 import com.foundationdb.server.service.config.ConfigurationService;
 import com.foundationdb.server.service.dxl.DXLService;
 import com.foundationdb.server.service.monitor.MonitorService;
-import com.foundationdb.server.service.jmx.JmxRegistryService;
 import com.foundationdb.server.service.servicemanager.ServiceManagerBase;
 import com.foundationdb.server.service.session.SessionService;
 import com.foundationdb.server.service.stats.StatisticsService;
@@ -53,8 +52,6 @@ public interface ServiceManager extends ServiceManagerBase {
 
     SchemaManager getSchemaManager();
 
-    JmxRegistryService getJmxRegistryService();
-    
     StatisticsService getStatisticsService();
 
     SessionService getSessionService();

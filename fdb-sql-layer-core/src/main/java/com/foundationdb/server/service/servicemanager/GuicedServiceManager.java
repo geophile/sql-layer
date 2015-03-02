@@ -23,8 +23,6 @@ import com.foundationdb.server.service.ServiceManager;
 import com.foundationdb.server.service.config.ConfigurationService;
 import com.foundationdb.server.service.dxl.DXLService;
 import com.foundationdb.server.service.monitor.MonitorService;
-import com.foundationdb.server.service.jmx.JmxManageable;
-import com.foundationdb.server.service.jmx.JmxRegistryService;
 import com.foundationdb.server.service.servicemanager.configuration.BindingsConfigurationLoader;
 import com.foundationdb.server.service.servicemanager.configuration.DefaultServiceConfigurationHandler;
 import com.foundationdb.server.service.servicemanager.configuration.ServiceBinding;
@@ -37,7 +35,6 @@ import com.foundationdb.server.store.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.ObjectName;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -116,11 +113,6 @@ public final class GuicedServiceManager implements ServiceManager {
     @Override
     public SchemaManager getSchemaManager() {
         return getServiceByClass(SchemaManager.class);
-    }
-
-    @Override
-    public JmxRegistryService getJmxRegistryService() {
-        return getServiceByClass(JmxRegistryService.class);
     }
 
     @Override
