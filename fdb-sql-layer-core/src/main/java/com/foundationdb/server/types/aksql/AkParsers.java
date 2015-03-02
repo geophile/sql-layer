@@ -17,6 +17,7 @@
 
 package com.foundationdb.server.types.aksql;
 
+import com.foundationdb.server.error.LobUnsupportedException;
 import com.foundationdb.server.error.InvalidGuidFormatException;
 import com.foundationdb.server.types.TExecutionContext;
 import com.foundationdb.server.types.TParser;
@@ -86,5 +87,12 @@ public class AkParsers
             }
         }
     };
-    
+
+    public static final TParser BLOB = new TParser()
+    {
+        @Override
+        public void parse(TExecutionContext context, ValueSource source, ValueTarget target) {
+            throw new LobUnsupportedException("String parsing unsupported");
+        }
+    };
 }
