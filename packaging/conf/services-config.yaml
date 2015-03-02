@@ -2,7 +2,6 @@
     - com.foundationdb.sql.LayerInfoInterface
     - com.foundationdb.server.service.dxl.DXLService
     - com.foundationdb.server.service.stats.StatisticsService
-    - com.foundationdb.server.service.jmx.JmxRegistryService
     - com.foundationdb.sql.embedded.EmbeddedJDBCService
     - com.foundationdb.server.service.monitor.MonitorService
     - com.foundationdb.server.service.is.BasicInfoSchemaTablesService

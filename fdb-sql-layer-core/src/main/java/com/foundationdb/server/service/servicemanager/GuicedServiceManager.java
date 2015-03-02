@@ -308,8 +308,8 @@ public final class GuicedServiceManager implements ServiceManager {
     final Guicer.ServiceLifecycleActions<Service> STANDARD_SERVICE_ACTIONS
             = new Guicer.ServiceLifecycleActions<Service>()
     {
-        private Map<Class<? extends JmxManageable>,ObjectName> jmxNames
-                = Collections.synchronizedMap(new HashMap<Class<? extends JmxManageable>, ObjectName>());
+        //private Map<Class<? extends JmxManageable>,ObjectName> jmxNames
+        //        = Collections.synchronizedMap(new HashMap<Class<? extends JmxManageable>, ObjectName>());
 
         @Override
         public void onStart(Service service) {
@@ -321,20 +321,6 @@ public final class GuicedServiceManager implements ServiceManager {
                 if (setContextCl)
                     currentThread.setContextClassLoader(contextClassloader);
                 service.start();
-                if (service instanceof JmxManageable && isRequired(JmxRegistryService.class)) {
-                    JmxRegistryService registry = (service instanceof JmxRegistryService)
-                            ? (JmxRegistryService) service
-                            : getJmxRegistryService();
-                    JmxManageable manageable = (JmxManageable)service;
-                    ObjectName objectName = registry.register(manageable);
-                    jmxNames.put(manageable.getClass(), objectName);
-                    // TODO because our dependency graph is created via Service.start() invocations, if service A uses service B
-                    // in stop() but not start(), and service B has already been shut down, service B will be resurrected. Yuck.
-                    // I don't know of a good way around this, other than by formalizing our dependency graph via constructor
-                    // params (and thus removing ServiceManagerImpl.get() ). Until this is resolved, simplest is to just shrug
-                    // our shoulders and not check
-    //                assert (ObjectName)old == null : objectName + " has displaced " + old;
-                }
             }
             finally {
                 if (setContextCl)
@@ -344,17 +330,6 @@ public final class GuicedServiceManager implements ServiceManager {
 
         @Override
         public void onShutdown(Service service) {
-            if (service instanceof JmxManageable && isRequired(JmxRegistryService.class)) {
-                JmxRegistryService registry = (service instanceof JmxRegistryService)
-                        ? (JmxRegistryService) service
-                        : getJmxRegistryService();
-                JmxManageable manageable = (JmxManageable) service;
-                ObjectName objectName = jmxNames.get(manageable.getClass());
-                if (objectName == null) {
-                    throw new NullPointerException("service not registered: " + manageable.getClass());
-                }
-                registry.unregister(objectName);
-            }
             service.stop();
         }
 
