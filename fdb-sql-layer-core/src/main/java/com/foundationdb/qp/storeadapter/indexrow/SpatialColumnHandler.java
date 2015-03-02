@@ -151,8 +151,6 @@ public class SpatialColumnHandler
         return zs;
     }
 
-    private static final long[] EMPTY_Z_ARRAY = new long[0];
-
     private final Space space;
     private final int dimensions;
     private final int[] positions;    
