@@ -37,6 +37,7 @@ import com.foundationdb.server.error.ConnectionTerminatedException;
 import com.foundationdb.server.error.InvalidOperationException;
 import com.foundationdb.server.error.SecurityException;
 import com.foundationdb.server.error.UnsupportedConfigurationException;
+import com.foundationdb.server.service.ServiceManager;
 import com.foundationdb.server.service.monitor.SessionMonitor.StatementTypes;
 import com.foundationdb.sql.parser.AlterServerNode;
 
@@ -214,7 +215,8 @@ public class PostgresServerStatement extends PostgresStatementResults
                             conn.waitAndStop();
                     }
                 }
-                shutdown();
+                shutdown(server.getServiceManager());
+                
             }
             if (completeCurrent != null)
                 throw new ConnectionTerminatedException(completeCurrent);
@@ -255,13 +257,12 @@ public class PostgresServerStatement extends PostgresStatementResults
         }
     }
 
-    protected void shutdown () throws Exception {
+    protected void shutdown (final ServiceManager sm) throws Exception {
         new Thread() {
             @Override
             public void run() {
                 try {
-                    MBeanServer jmxServer = ManagementFactory.getPlatformMBeanServer();
-                    jmxServer.invoke(new ObjectName ("com.foundationdb:type=SHUTDOWN"), "shutdown", new Object[0], new String[0]);
+                    sm.stopServices();
                 }
                 catch (Exception ex) {
                     LOG.error("Shutdown failed", ex);

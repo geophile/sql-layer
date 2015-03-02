@@ -20,8 +20,8 @@ package com.foundationdb.sql.pg;
 import com.foundationdb.sql.server.CacheCounters;
 import com.foundationdb.sql.server.ServerServiceRequirements;
 import com.foundationdb.sql.server.ServerStatementCache;
-
 import com.foundationdb.server.error.InvalidPortException;
+import com.foundationdb.server.service.ServiceManager;
 import com.foundationdb.server.service.metrics.LongMetric;
 import com.foundationdb.server.service.monitor.MonitorStage;
 import com.foundationdb.server.service.monitor.ServerMonitor;
@@ -46,6 +46,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.security.Principal;
+
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -466,6 +467,10 @@ public class PostgresServer implements Runnable, ServerMonitor {
     @Override
     public int getSessionCount() {
         return nconnections;
+    }
+    
+    public ServiceManager getServiceManager() {
+        return reqs.serviceManager(); 
     }
 
 }

@@ -258,51 +258,9 @@ public final class GuicedServiceManager implements ServiceManager {
     private State state = State.IDLE;
     private final Guicer guicer;
 
-    private final ServiceManagerMXBean bean = new ServiceManagerMXBean() {
-        @Override
-        public List<String> getStartedDependencies() {
-            boolean fullNames = isFullClassNames();
-            List<String> result = new ArrayList<>();
-            for (Class<?> requiredClass : guicer.directlyRequiredClasses()) {
-                List<?> dependencies = guicer.dependenciesFor(requiredClass);
-                List<String> dependenciesClasses = new ArrayList<>();
-                for (Object dependency : dependencies) {
-                    Class<?> depClass = dependency.getClass();
-                    dependenciesClasses.add(fullNames ? depClass.getName() : depClass.getSimpleName());
-                }
-                result.add(dependenciesClasses.toString());
-            }
-            return result;
-        }
-
-        @Override
-        public boolean isFullClassNames() {
-            return fullClassNames.get();
-        }
-
-        @Override
-        public void setFullClassNames(boolean value) {
-            fullClassNames.set(value);
-        }
-
-        @Override
-        public List<String> getServicesInStartupOrder() {
-            List<String> result = new ArrayList<>();
-            for (Class<?> serviceClass : guicer.servicesClassesInStartupOrder()) {
-                result.add(isFullClassNames() ? serviceClass.getName() : serviceClass.getSimpleName() );
-            }
-            return result;
-        }
-
-        private final AtomicBoolean fullClassNames = new AtomicBoolean(false);
-    };
-
     final Guicer.ServiceLifecycleActions<Service> STANDARD_SERVICE_ACTIONS
             = new Guicer.ServiceLifecycleActions<Service>()
     {
-        //private Map<Class<? extends JmxManageable>,ObjectName> jmxNames
-        //        = Collections.synchronizedMap(new HashMap<Class<? extends JmxManageable>, ObjectName>());
-
         @Override
         public void onStart(Service service) {
             final Thread currentThread = Thread.currentThread();
