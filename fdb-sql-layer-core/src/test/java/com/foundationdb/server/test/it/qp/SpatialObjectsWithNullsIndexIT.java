@@ -450,7 +450,7 @@ public class SpatialObjectsWithNullsIndexIT extends OperatorITBase
 
     private SpatialObject wkbToSpatialObject(ValueSource valueSource) throws ParseException
     {
-        return Spatial.deserializeWKB(space, ((WrappingByteSource) ValueSources.toObject(valueSource)).toByteSubarray());
+        return Spatial.deserializeWKB(space, (byte[]) ValueSources.toObject(valueSource));
     }
 
     private SpatialObject wktToSpatialObject(ValueSource valueSource) throws ParseException

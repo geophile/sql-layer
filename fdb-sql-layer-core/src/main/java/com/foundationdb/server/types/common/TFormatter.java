@@ -17,12 +17,14 @@
 
 package com.foundationdb.server.types.common;
 
+import com.foundationdb.server.error.LobUnsupportedException;
+import com.foundationdb.server.service.blob.BlobRef;
 import com.foundationdb.server.types.FormatOptions;
 import com.foundationdb.server.types.TClassFormatter;
 import com.foundationdb.server.types.TInstance;
 import com.foundationdb.server.types.value.ValueSource;
 import com.foundationdb.util.AkibanAppender;
-
+import com.foundationdb.util.Strings;
 import java.util.UUID;
 
 public class TFormatter {
@@ -62,6 +64,40 @@ public class TFormatter {
                 out.append("\"");
                 format(type, source, out);
                 out.append("\"");
+            }
+        },
+        BLOB {
+            @Override
+            public void format(TInstance type, ValueSource source, AkibanAppender out) {
+                throw new LobUnsupportedException("Formatting BLOB as string is unsupported");
+            }
+
+            @Override
+            public void formatAsLiteral(TInstance type, ValueSource source, AkibanAppender out) {
+                BlobRef blob = (BlobRef) source.getObject();
+                if ( blob.isReturnedBlobInUnwrappedMode() || blob.isShortLob()) {
+                    byte[] value = source.getBytes();
+                    out.append("X'");
+                    out.append(Strings.hex(value));
+                    out.append("'");
+                }
+                else if (blob.isLongLob()) {
+                    out.append("'");
+                    format(type, source, out);
+                    out.append("'");
+                }
+            }
+
+            @Override
+            public void formatAsJson(TInstance type, ValueSource source, AkibanAppender out, FormatOptions options) {
+                BlobRef blob = (BlobRef) source.getObject();
+                if (blob.isReturnedBlobInUnwrappedMode() || blob.isShortLob()) {
+                    String formattedString = options.get(FormatOptions.JsonBinaryFormatOption.class).format(blob.getBytes());
+                    out.append("\"" + formattedString + "\"");
+                }
+                else if (blob.isLongLob()) {
+                    out.append("\"" + blob.getId().toString() + "\"");
+                }
             }
         };
     }
