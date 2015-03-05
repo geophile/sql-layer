@@ -237,10 +237,10 @@ public final class CBasicIT extends ITBase {
     }
 
     @Test
-    public void schemaIdIncrements() throws Exception {
-        int firstGen = ddl().getGenerationAsInt(session());
+    public void aisGenerationIncrements() throws Exception {
+        long firstGen = ddl().getAIS(session()).getGeneration();
         createTable("sch", "c1", "id int not null primary key");
-        int secondGen = ddl().getGenerationAsInt(session());
+        long secondGen = ddl().getAIS(session()).getGeneration();
         assertTrue(String.format("failed %d > %d", secondGen, firstGen), secondGen > firstGen);
     }
 
