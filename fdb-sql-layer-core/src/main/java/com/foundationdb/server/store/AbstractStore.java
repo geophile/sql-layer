@@ -341,7 +341,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
                             
     private void updateRow (Session session, Row oldRow, Row newRow, boolean propagateHKeyChanges) {
         Group group = oldRow.rowType().table().getGroup();
-        // RowDefs may be different during an ALTER. Only non-PK/FK columns change in this scenario.
+        // RowTypes may be different during an ALTER. Only non-PK/FK columns change in this scenario.
         SDType storeData = createStoreData(session, group);
 
         UPDATE_ROW_TAP.in();

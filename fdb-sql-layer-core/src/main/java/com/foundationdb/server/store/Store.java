@@ -40,7 +40,7 @@ import java.util.Collection;
 
 public interface Store extends KeyCreator {
 
-    /** Get the RowDef for the given ID. Note, a transaction should be active before calling this. */
+    /** Get the current AIS. */
     AkibanInformationSchema getAIS(Session session);
 
     /**  If not {@code null}, only maintain the given {@code tableIndexes} and {@code groupIndexes}. */

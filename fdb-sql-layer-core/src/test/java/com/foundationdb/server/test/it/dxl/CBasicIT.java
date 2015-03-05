@@ -59,11 +59,11 @@ public final class CBasicIT extends ITBase {
     }
 
     /*
-     * Found from an actual case in the MTR test suite. Caused by recycled RowDefIDs and undeleted table statuses.
+     * Found from an actual case in the MTR test suite. Caused by recycled table IDs and undeleted table statuses.
      * Really testing that table statuses get deleted, but about as direct as we can get from this level.
      */
     @Test
-    public void dropThenCreateRowDefIDRecycled() throws InvalidOperationException {
+    public void dropThenCreateTableIDRecycled() throws InvalidOperationException {
         NewAISBuilder builder = AISBBasedBuilder.create("test", ddl().getTypesTranslator());
         builder.table("t1").autoIncInt("id", 1).pk("id").colString("name", 255);
         ddl().createTable(session(), builder.ais().getTable("test", "t1"));
