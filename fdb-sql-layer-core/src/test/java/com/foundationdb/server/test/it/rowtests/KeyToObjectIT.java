@@ -56,8 +56,7 @@ public class KeyToObjectIT extends ITBase {
     }
 
     /**
-     * Internal helper for comparing all indexed values in an index tree to their values in the row after
-     * going through Encoder.toObject(RowData) and Encoder.toObject(Key), respectively.
+     * Internal helper for comparing all indexed values in an index tree to their values in the row.
      * <p><b>Note:</b> For test simplicity, the values in the row must be in index order.</p>
      * @param tableId Table to scan.
      * @param expectedRowCount Rows expected from a full table scan.

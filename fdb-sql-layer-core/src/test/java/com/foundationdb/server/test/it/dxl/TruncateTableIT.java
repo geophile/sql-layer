@@ -67,7 +67,7 @@ public final class TruncateTableIT extends ITBase {
 
         int indexId = ddl().getAIS(session()).getTable("test", "t").getIndex("pid").getIndexId();
 
-        // Exception originally thrown during dml.doScan: Corrupt RowData at {1,(long)1}
+        // Exception originally thrown during dml.doScan
         List<Row> rows = scanAll(tableId, indexId);
         assertEquals("Rows scanned", 0, rows.size());
     }

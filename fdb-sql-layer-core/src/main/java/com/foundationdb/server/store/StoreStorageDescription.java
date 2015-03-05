@@ -35,10 +35,10 @@ public abstract class StoreStorageDescription<SType,SDType> extends StorageDescr
         super(forObject, storageFormat);
     }
 
-    /** Fill the given <code>RowData</code> from the current value. */
+    /** Create a Row from the current value. */
     public abstract Row expandRow (SType store, Session session, SDType storeData, Schema schema);
     
-    /** Store the RowData in associated value. */
+    /** Store the Row in associated value. */
     public abstract void packRow (SType store, Session session,
                                   SDType storeData, Row row);
     

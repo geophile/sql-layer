@@ -576,7 +576,7 @@ public class MemoryStore extends AbstractStore<MemoryStore, MemoryStoreData, Mem
         byte[] end = join(begin, BYTES_FF);
         Iterator<Entry<byte[], byte[]>> it = txn.getRange(begin, end);
         if(it.hasNext()) {
-            // Using RowData, can give better error than check.throwException().
+            // Using Row, can give better error than check.throwException().
             String msg = formatIndexRowString(session, row, index);
             throw new DuplicateKeyException(index.getIndexName(), msg);
         }

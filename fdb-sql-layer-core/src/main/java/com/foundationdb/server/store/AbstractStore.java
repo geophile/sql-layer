@@ -140,7 +140,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
     /** Create an iterator to visit all descendants of the current key. */
     protected abstract Iterator<Void> createDescendantIterator(Session session, SDType storeData);
 
-    /** Read the index row for the given RowData or null if not present. storeData has been initialized for index. */
+    /** Read the index row for the given Row or null if not present. storeData has been initialized for index. */
     protected abstract IndexRow readIndexRow(Session session , Index parentPKIndex, SDType storeData, Row row);
     
     /** Called when a non-serializable store would need a row lock. */
@@ -211,7 +211,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
                     }
                     ++i2hPosition;
                 } else {
-                    // HKey column from rowData
+                    // HKey column from row
                     Column column = hKeyColumn.column();
                     hKeyAppender.append(row.value(column.getPosition()), column);
                 }
@@ -269,7 +269,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
         
     }
     
-    /** Build a user-friendly representation of the Index row for the given RowData. */
+    /** Build a user-friendly representation of the Index row for the given Row. */
     protected String formatIndexRowString(Session session, Row row, Index index) {
         StringBuilder sb = new StringBuilder();
         AkibanAppender appender = AkibanAppender.of(sb);

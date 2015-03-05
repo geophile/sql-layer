@@ -68,9 +68,9 @@ public class SpatialColumnHandler
         return indexField >= firstSpatialField && indexField <= lastSpatialField;
     }
 
-    public void processSpatialObject(Row rowData, Operation operation)
+    public void processSpatialObject(Row row, Operation operation)
     {
-        bind(rowData);
+        bind(row);
         if (spatialObject != null) {
             long[] zs = zArray();
             Spatial.shuffle(space, spatialObject, zs);

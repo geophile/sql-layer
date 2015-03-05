@@ -36,7 +36,7 @@ public class IndexRowComposition {
         this.hkeyPositions = hkeyPositions;
     }
 
-    public boolean isInRowData(int indexPos) {
+    public boolean isInRow(int indexPos) {
         return fieldPositions[indexPos] >= 0;
     }
 

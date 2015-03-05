@@ -51,17 +51,18 @@ public interface Store extends KeyCreator {
     /** newRow can be partial, as specified by selector, but oldRow must be fully present. */
     void updateRow(Session session, Row oldRow, Row newRow);
 
-    /** Save the TableIndex row for {@code rowData}. {@code hKey} must be populated. */
+    /** Save the TableIndex row for {@code row}. {@code hKey} must be populated. */
     void writeIndexRow(Session session, TableIndex index, Row row, Key hKey, WriteIndexRow buffer,
                         SpatialColumnHandler spatialColumnHandler, long zValue, boolean doLock);
-    /** Clear the TableIndex row for {@code rowData]. {@code hKey} must be populated. */
+
+    /** Clear the TableIndex row for {@code row}. {@code hKey} must be populated. */
     void deleteIndexRow(Session session, TableIndex index, Row row, Key hKey, WriteIndexRow buffer,
             SpatialColumnHandler spatialColumnHandler, long zValue, boolean doLock);
 
-    /** Save the GroupIndex rows for {@code rowData}. Locking handed by StoreGIHandler. */
+    /** Save the GroupIndex rows for {@code row}. Locking handed by StoreGIHandler. */
     void writeIndexRows(Session session, Table table, Row row, Collection<GroupIndex> indexes);
 
-    /** Clear the GroupIndex rows for {@code rowData}. Locking handled by StoreGIHandler. */
+    /** Clear the GroupIndex rows for {@code row}. Locking handled by StoreGIHandler. */
     void deleteIndexRows(Session session, Table table, Row row, Collection<GroupIndex> indexes);
 
     /** Compute and return the next value for the given sequence */

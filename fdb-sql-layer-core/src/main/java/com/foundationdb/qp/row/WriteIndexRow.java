@@ -52,7 +52,7 @@ public class WriteIndexRow extends AbstractRow {
                     pKeyAppends++;
                 }
             } else {
-                if (indexRowComp.isInRowData(indexField)) {
+                if (indexRowComp.isInRow(indexField)) {
                     int position = indexRowComp.getFieldPosition(indexField);
                     Column column = row.rowType().table().getColumnsIncludingInternal().get(position);
                     ValueSource source = row.value(column.getPosition());
