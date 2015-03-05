@@ -19,7 +19,7 @@ package com.foundationdb.sql.optimizer.rule;
 
 import com.foundationdb.ais.model.AkibanInformationSchema;
 
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 
 import org.yaml.snakeyaml.Yaml;
 

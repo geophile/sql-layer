@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.foundationdb.server.rowdata;
+package com.foundationdb.server;
 
 import com.foundationdb.ais.model.AISMerge;
 import com.foundationdb.ais.model.AbstractVisitor;

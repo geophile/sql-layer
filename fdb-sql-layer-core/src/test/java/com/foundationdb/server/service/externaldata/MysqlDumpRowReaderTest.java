@@ -20,7 +20,7 @@ package com.foundationdb.server.service.externaldata;
 import com.foundationdb.ais.model.AkibanInformationSchema;
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.types.mcompat.mtypes.MTypesTranslator;
 import com.foundationdb.server.types.value.ValueSources;
 

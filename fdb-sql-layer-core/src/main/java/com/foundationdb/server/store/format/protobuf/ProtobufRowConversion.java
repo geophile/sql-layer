@@ -17,9 +17,9 @@
 
 package com.foundationdb.server.store.format.protobuf;
 
-import com.foundationdb.server.error.*;
-import com.foundationdb.server.rowdata.ConversionHelperBigDecimal;
+import com.foundationdb.server.error.AkibanInternalException;
 import com.foundationdb.server.service.blob.BlobRef;
+import com.foundationdb.server.types.ConversionHelperBigDecimal;
 import com.foundationdb.server.types.TClass;
 import com.foundationdb.server.types.TInstance;
 import com.foundationdb.server.types.aksql.aktypes.AkBlob;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.foundationdb.server.rowdata;
+package com.foundationdb.server.types;
 
 import com.foundationdb.server.types.common.BigDecimalWrapperImpl;
 import com.foundationdb.util.AkibanAppender;
@@ -148,7 +148,7 @@ public final class ConversionHelperBigDecimal {
     }
 
     public static String normalizeToString(BigDecimal value, int declPrec, int declScale) {
-        // First, we have to turn the value into one that fits the FieldDef's constraints.
+        // First, we have to turn the value into one that fits the Column's constraints.
         int valuePrec = BigDecimalWrapperImpl.sqlPrecision(value);
         int valueScale = BigDecimalWrapperImpl.sqlScale(value);
         assert valueScale >= 0 : value;

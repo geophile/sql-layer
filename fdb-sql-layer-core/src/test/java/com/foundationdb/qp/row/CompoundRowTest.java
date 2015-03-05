@@ -29,7 +29,7 @@ import com.foundationdb.ais.model.Index;
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.ais.model.TestAISBuilder;
 import com.foundationdb.qp.rowtype.TableRowType;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.types.service.TestTypesRegistry;
 
 public class CompoundRowTest {

@@ -18,7 +18,7 @@
 package com.foundationdb.server.types.common.types;
 
 import com.foundationdb.server.error.AkibanInternalException;
-import com.foundationdb.server.rowdata.ConversionHelperBigDecimal;
+import com.foundationdb.server.types.ConversionHelperBigDecimal;
 import com.foundationdb.server.types.*;
 import com.foundationdb.server.types.aksql.AkCategory;
 import com.foundationdb.server.types.common.BigDecimalWrapper;

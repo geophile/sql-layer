@@ -17,7 +17,7 @@
 
 package com.foundationdb.sql.test;
 
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.sql.StandardException;
 import com.foundationdb.sql.compiler.BooleanNormalizer;
 import com.foundationdb.sql.optimizer.AISBinder;

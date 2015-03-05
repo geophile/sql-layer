@@ -17,7 +17,7 @@
 
 package com.foundationdb.server.types.common;
 
-import com.foundationdb.server.rowdata.ConversionHelperBigDecimal;
+import com.foundationdb.server.types.ConversionHelperBigDecimal;
 import com.foundationdb.server.types.FormatOptions;
 import com.foundationdb.server.types.TClassFormatter;
 import com.foundationdb.server.types.TInstance;

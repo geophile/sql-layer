@@ -27,7 +27,7 @@ import org.junit.Test;
 import com.foundationdb.ais.model.Index;
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.ais.model.TestAISBuilder;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.types.mcompat.mtypes.MNumeric;
 import com.foundationdb.server.types.mcompat.mtypes.MString;
 import com.foundationdb.server.types.service.TestTypesRegistry;
