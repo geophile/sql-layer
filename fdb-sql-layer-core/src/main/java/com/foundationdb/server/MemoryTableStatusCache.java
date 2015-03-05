@@ -68,11 +68,6 @@ public class MemoryTableStatusCache implements TableStatusCache
     }
 
     @Override
-    public void detachAIS() {
-        // None
-    }
-
-    @Override
     public void clearTableStatus(Session session, Table table) {
         TableStatus status = table.tableStatus();
         if(status instanceof VirtualTableStatus) {

@@ -21,9 +21,11 @@
 - output: [ ['constraint_name_1', 'constraint_name_1'], [null, 'id'],['t1_ukey', 'id_2'], [ null, 'index_name_1'], ['index_name_2_ukey', 'index_name_2']]
 ---
 - CreateTable: o (id INT)
+
+# Would ideally use a non-default format but there aren't any others for indexes
 ---
-- Statement: ALTER TABLE o ADD INDEX id_index(id) STORAGE_FORMAT rowdata
+- Statement: ALTER TABLE o ADD INDEX id_index(id) STORAGE_FORMAT tuple
 ---
 - Statement: select storage_format from information_schema.indexes where table_name = 'o' and index_name = 'id_index';
-- output: [['rowdata']]
+- output: [['tuple']]
 ...

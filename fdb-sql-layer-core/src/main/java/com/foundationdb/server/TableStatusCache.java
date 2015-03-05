@@ -31,9 +31,6 @@ public interface TableStatusCache {
      */
     TableStatus getOrCreateVirtualTableStatus(int tableID, VirtualScanFactory factory);
 
-    /** Clean up any AIS associated state stored by this cache or any of its TableStatuses. */
-    void detachAIS();
-
     /** Permanently remove any state associated with the given table. */
     void clearTableStatus(Session session, Table table);
 }

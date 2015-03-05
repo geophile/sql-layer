@@ -48,7 +48,7 @@ public class CostEstimatorTest
     @Before
     public void loadSchema() throws Exception {
         ais = OptimizerTestBase.parseSchema(new File(RESOURCE_DIR, "schema.ddl"));
-        RulesTestHelper.ensureRowDefs(ais);
+        RulesTestHelper.ensureFieldAssociations(ais);
         tree = new TableTree();
         costEstimator = new TestCostEstimator(ais, new Schema(ais), new File(RESOURCE_DIR, "stats.yaml"), false, new Properties());
     }

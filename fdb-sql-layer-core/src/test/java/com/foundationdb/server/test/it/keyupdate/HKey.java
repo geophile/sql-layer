@@ -19,7 +19,6 @@ package com.foundationdb.server.test.it.keyupdate;
 
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.qp.rowtype.RowType;
-import com.foundationdb.server.rowdata.RowDef;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -137,9 +136,6 @@ public class HKey implements Comparable<HKey>
         for (Object element : elements) {
             if (element instanceof RowType) {
                 element = ((RowType)element).table();
-            } else
-            if (element instanceof RowDef) {
-                element = ((RowDef) element).table();
             }
             this.elements.add(element);
         }

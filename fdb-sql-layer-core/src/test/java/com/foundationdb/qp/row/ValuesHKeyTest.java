@@ -414,7 +414,7 @@ public class ValuesHKeyTest {
         builder.groupingIsComplete();
         
         SchemaFactory factory = new SchemaFactory ("schema");
-        factory.buildRowDefs(builder.akibanInformationSchema());
+        factory.buildTableStatusAndFieldAssociations(builder.akibanInformationSchema());
         return new Schema(builder.akibanInformationSchema());
     }
 

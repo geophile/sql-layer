@@ -83,11 +83,6 @@ public class FDBTableStatusCache implements TableStatusCache {
     }
 
     @Override
-    public synchronized void detachAIS() {
-        //TODO: Nothing
-    }
-
-    @Override
     public synchronized void clearTableStatus(Session session, Table table) {
         TableStatus status = table.tableStatus();
         if(status instanceof FDBTableStatus) {

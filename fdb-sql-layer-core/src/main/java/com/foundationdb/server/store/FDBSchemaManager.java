@@ -35,14 +35,12 @@ import com.foundationdb.ais.protobuf.ProtobufWriter;
 import com.foundationdb.blob.BlobAsync;
 import com.foundationdb.directory.DirectorySubspace;
 import com.foundationdb.directory.PathUtil;
-import com.foundationdb.qp.virtualadapter.VirtualAdapter;
 import com.foundationdb.qp.storeadapter.FDBAdapter;
 import com.foundationdb.server.FDBTableStatusCache;
-import com.foundationdb.server.TableStatus;
+import com.foundationdb.server.TableStatusCache;
 import com.foundationdb.server.error.FDBAdapterException;
 import com.foundationdb.server.error.MetadataVersionNewerException;
 import com.foundationdb.server.error.MetadataVersionTooOldException;
-import com.foundationdb.server.rowdata.RowDefBuilder;
 import com.foundationdb.server.service.Service;
 import com.foundationdb.server.service.ServiceManager;
 import com.foundationdb.server.service.config.ConfigurationService;
@@ -225,7 +223,7 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
                         saveInitialState(txn);
                     }
                     AkibanInformationSchema newAIS = loadFromStorage(session);
-                    buildRowDefs(session, newAIS);
+                    buildTableStatusAndFieldAssociations(session, newAIS);
                     FDBSchemaManager.this.curAIS = newAIS;
                 }
             });
@@ -313,6 +311,11 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
     //
 
     @Override
+    protected TableStatusCache getTableStatusCache() {
+        return tableStatusCache;
+    }
+
+    @Override
     protected NameGenerator getNameGenerator(Session session) {
         return (getOnlineSession(session, null) != null) ?
             FDBNameGenerator.createForOnlinePath(txnService.getTransaction(session), rootDir, nameGenerator) :
@@ -334,7 +337,7 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
         } catch (RuntimeException e) {
             throw FDBAdapter.wrapFDBException(session, e);
         }
-        buildRowDefs(session, newAIS);
+        buildTableStatusAndFieldAssociations(session, newAIS);
     }
 
     @Override
@@ -357,7 +360,7 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
 
         // A new generation isn't needed as we evict the current copy below and, as above, single threaded startup
         validateForSession(session, newAIS, null);
-        buildRowDefs(session, newAIS);
+        buildTableStatusAndFieldAssociations(session, newAIS);
 
         txnService.addCallback(session, TransactionService.CallbackType.COMMIT, new TransactionService.Callback() {
             @Override
@@ -467,7 +470,7 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
                         // Reader will have two copies of affected schemas, skip second (i.e. non-online)
                         AkibanInformationSchema newAIS = finishReader(reader);
                         validateAndFreeze(session, newAIS, generation);
-                        buildRowDefs(session, newAIS);
+                        buildTableStatusAndFieldAssociations(session, newAIS);
                         onlineCache.onlineToAIS.put(onlineID, newAIS);
                     } else if(schemaCount != 0) {
                         throw new IllegalStateException("No generation but had schemas");
@@ -524,7 +527,7 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
                     localAIS = curAIS;
                 } else {
                     localAIS = loadFromStorage(session);
-                    buildRowDefs(session, localAIS);
+                    buildTableStatusAndFieldAssociations(session, localAIS);
                     if(localAIS.getGeneration() > curAIS.getGeneration()) {
                         curAIS = localAIS;
                         mergeNewAIS(session, curAIS);
@@ -827,24 +830,6 @@ public class FDBSchemaManager extends AbstractSchemaManager implements Service, 
                        TableName.SECURITY_SCHEMA.equals(name.getSchemaName());
             }
         });
-    }
-
-    private void buildRowDefs(Session session, AkibanInformationSchema newAIS) {
-        tableStatusCache.detachAIS();
-        // TODO: this attaches the TableStatus to each table. 
-        // This used to be done in RowDefBuilder#build() but no longer.
-        for (final Table table : newAIS.getTables().values()) {
-            final TableStatus status;
-            if (table.isVirtual()) {
-                status = tableStatusCache.getOrCreateVirtualTableStatus(table.getTableId(),
-                                                                        VirtualAdapter.getFactory(table));
-            } else {
-                status = tableStatusCache.createTableStatus(table);
-            }
-            table.tableStatus(status);
-        }
-        RowDefBuilder rowDefBuilder = new RowDefBuilder(session, newAIS, tableStatusCache);
-        rowDefBuilder.build();
     }
 
     /** {@code null} = no data present, {@code true} = compatible, {@code false} = incompatible */

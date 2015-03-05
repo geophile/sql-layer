@@ -43,11 +43,6 @@ public class SimpleTableStatusCache implements TableStatusCache {
     }
 
     @Override
-    public void detachAIS() {
-        // None
-    }
-
-    @Override
     public synchronized void clearTableStatus(Session session, Table table) {
         virtualStatusMap.remove(table.getTableId());
     }

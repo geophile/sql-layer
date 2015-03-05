@@ -55,7 +55,7 @@ public final class CsvRowReaderTest {
     @Test
     public void reader() throws Exception {
         SchemaFactory schemaFactory = new SchemaFactory("test");
-        AkibanInformationSchema ais = schemaFactory.aisWithRowDefs(DDL);
+        AkibanInformationSchema ais = schemaFactory.aisWithTableStatus(DDL);
         Table t1 = ais.getTable("test", "t1");
         InputStream istr = new ByteArrayInputStream(Strings.join(CSV).getBytes("UTF-8"));
         List<Column> columns = new ArrayList<>(3);

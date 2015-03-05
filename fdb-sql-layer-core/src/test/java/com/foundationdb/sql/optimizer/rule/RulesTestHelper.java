@@ -64,9 +64,8 @@ public class RulesTestHelper
         return result;
     }
 
-    // Make fake row def cache to keep TableRowType constructor
-    // and Index.getAllColumns() from getting NPE.
-    public static void ensureRowDefs(AkibanInformationSchema ais) {
-        new SchemaFactory().buildRowDefs(ais);
+    // Field associations needed to keep Index.getAllColumns() from getting NPE.
+    public static void ensureFieldAssociations(AkibanInformationSchema ais) {
+        new SchemaFactory().buildTableStatusAndFieldAssociations(ais);
     }
 }

@@ -102,6 +102,13 @@ public class TupleStorageDescription extends FDBStorageDescription
         if (usage == null) {
             return;
         }
+        if (usage == TupleUsage.KEY_ONLY) {
+            // Derived can provide an alternative row
+            if((object instanceof Group) && (this.getClass() == TupleStorageDescription.class)) {
+                output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "KEY_ONLY not supported for Group")));
+                return;
+            }
+        }
         if (usage == TupleUsage.KEY_AND_ROW) {
             if (!(object instanceof Group)) {
                 output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "is not a Group and has no row")));

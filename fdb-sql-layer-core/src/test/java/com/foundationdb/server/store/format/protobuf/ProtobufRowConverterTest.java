@@ -134,7 +134,7 @@ public class ProtobufRowConverterTest {
     private static final String SCHEMA = "test";
 
     protected AkibanInformationSchema ais(String ddl) {
-        AkibanInformationSchema ais = new SchemaFactory(SCHEMA).aisWithRowDefs(ddl);
+        AkibanInformationSchema ais = new SchemaFactory(SCHEMA).aisWithTableStatus(ddl);
         for (Table table : ais.getTables().values()) {
             if (!table.hasVersion()) {
                 table.setVersion(0);

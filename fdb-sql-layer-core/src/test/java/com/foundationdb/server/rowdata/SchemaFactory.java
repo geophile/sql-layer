@@ -18,6 +18,7 @@
 package com.foundationdb.server.rowdata;
 
 import com.foundationdb.ais.model.AISMerge;
+import com.foundationdb.ais.model.AbstractVisitor;
 import com.foundationdb.ais.model.AkibanInformationSchema;
 import com.foundationdb.ais.model.DefaultNameGenerator;
 import com.foundationdb.ais.model.Group;
@@ -30,7 +31,6 @@ import com.foundationdb.qp.virtualadapter.VirtualAdapter;
 import com.foundationdb.qp.operator.QueryContext;
 import com.foundationdb.server.SimpleTableStatusCache;
 import com.foundationdb.server.TableStatus;
-import com.foundationdb.server.TableStatusCache;
 import com.foundationdb.server.api.DDLFunctions;
 import com.foundationdb.server.api.ddl.DDLFunctionsMockBase;
 import com.foundationdb.server.service.routines.MockRoutineLoader;
@@ -71,9 +71,9 @@ public class SchemaFactory {
         this.defaultSchema = defaultSchema;
     }
 
-    public AkibanInformationSchema aisWithRowDefs(String... ddl) {
+    public AkibanInformationSchema aisWithTableStatus(String... ddl) {
         AkibanInformationSchema ais = ais(ddl);
-        buildRowDefs(ais);
+        buildTableStatusAndFieldAssociations(ais);
         return ais;
     }
 
@@ -132,11 +132,24 @@ public class SchemaFactory {
         }
     }
 
-    public void buildRowDefs(AkibanInformationSchema ais) {
+    public void buildTableStatusAndFieldAssociations(AkibanInformationSchema ais) {
+        final Map<Table,Integer> ordinalMap = new HashMap<>();
+        for(Group group : ais.getGroups().values()) {
+            group.getRoot().visit(new AbstractVisitor() {
+                int ordinal = 1;
+
+                @Override
+                public void visit(Table table) {
+                    table.setOrdinal(ordinal++);
+                    ordinalMap.put(table, table.getOrdinal());
+                }
+            });
+        }
         SimpleTableStatusCache tableStatusCache = new SimpleTableStatusCache();
-        // TODO: this attaches the TableStatus to each table. 
-        // This used to be done in RowDefBuilder#build() but no longer.
         for (final Table table : ais.getTables().values()) {
+            // Field associations
+            table.computeFieldAssociations(ordinalMap);
+            // Table status
             final TableStatus status;
             if (table.isVirtual()) {
                 status = tableStatusCache.getOrCreateVirtualTableStatus(table.getTableId(),
@@ -146,31 +159,7 @@ public class SchemaFactory {
             }
             table.tableStatus(status);
         }
-        RowDefBuilder rowDefBuilder = new MockRowDefBuilder(ais, tableStatusCache);
-        rowDefBuilder.build();
-    }
 
-    private static class MockRowDefBuilder extends RowDefBuilder
-    {
-        public MockRowDefBuilder(AkibanInformationSchema ais, TableStatusCache tableStatusCache) {
-            // Note: Somewhat fragile -- Session isn't needed for creating RowDefs
-            super(null, ais, tableStatusCache);
-        }
-
-        @Override
-        protected Map<Table,Integer> createOrdinalMap() {
-            Map<Group,List<RowDef>> groupToRowDefs = getRowDefsByGroup();
-            Map<Table,Integer> ordinalMap = new HashMap<>();
-            for(List<RowDef> allRowDefs  : groupToRowDefs.values()) {
-                int tableOrdinal = 1;
-                for(RowDef userRowDef : allRowDefs) {
-                    int ordinal = tableOrdinal++;
-                    userRowDef.table().setOrdinal(ordinal);
-                    ordinalMap.put(userRowDef.table(), ordinal);
-                }
-            }
-            return ordinalMap;
-        }
     }
 
     private static class CreateOnlyDDLMock extends DDLFunctionsMockBase {

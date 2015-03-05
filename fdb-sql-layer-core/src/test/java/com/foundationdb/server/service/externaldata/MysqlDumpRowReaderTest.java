@@ -23,7 +23,6 @@ import com.foundationdb.qp.row.Row;
 import com.foundationdb.server.rowdata.SchemaFactory;
 import com.foundationdb.server.types.mcompat.mtypes.MTypesTranslator;
 import com.foundationdb.server.types.value.ValueSources;
-import com.foundationdb.util.Strings;
 
 import org.junit.Test;
 
@@ -52,7 +51,7 @@ public final class MysqlDumpRowReaderTest {
     @Test
     public void reader() throws Exception {
         SchemaFactory schemaFactory = new SchemaFactory("test");
-        AkibanInformationSchema ais = schemaFactory.aisWithRowDefs(DDL);
+        AkibanInformationSchema ais = schemaFactory.aisWithTableStatus(DDL);
         Table t1 = ais.getTable("test", "t1");
         InputStream istr = new FileInputStream(DUMP_FILE);
         MysqlDumpRowReader reader = new MysqlDumpRowReader(t1, t1.getColumns(), 
