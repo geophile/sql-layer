@@ -20,7 +20,8 @@ package com.foundationdb.server;
 import com.foundationdb.server.service.session.Session;
 
 /** Per-table row count management. */
-public interface TableStatus {
+public interface TableStatus
+{
     /** Record that a row has been deleted. */
     void rowDeleted(Session session);
 
@@ -42,6 +43,4 @@ public interface TableStatus {
 
     /** @return The table ID this status is for */
     int getTableID();
-
-    void setRowCount(Session session, long rowCount);
 }

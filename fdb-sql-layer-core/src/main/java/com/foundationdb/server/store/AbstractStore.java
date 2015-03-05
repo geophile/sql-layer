@@ -65,7 +65,6 @@ import com.foundationdb.util.AkibanAppender;
 import com.foundationdb.util.tap.InOutTap;
 import com.foundationdb.util.tap.PointTap;
 import com.foundationdb.util.tap.Tap;
-import com.geophile.z.space.SpaceImpl;
 import com.persistit.Key;
 
 import org.slf4j.Logger;
@@ -535,12 +534,6 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
         truncateIndexes(session, group.getIndexes());
         // Group tree
         truncateTree(session, group);
-    }
-
-    @Override
-    public void truncateTableStatus(final Session session, final int rowDefId) {
-        Table table = getAIS(session).getTable(rowDefId);
-        table.tableStatus().truncate(session);
     }
 
     @Override

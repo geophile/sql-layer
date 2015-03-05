@@ -89,10 +89,5 @@ public class SimpleTableStatusCache implements TableStatusCache {
         public int getTableID() {
             return tableID;
         }
-
-        @Override
-        public synchronized void setRowCount(Session session, long rowCount) {
-            this.rowCount = rowCount;
-        }
     }
 }
