@@ -29,8 +29,10 @@ import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
+import org.slf4j.LoggerFactory;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
 
@@ -103,11 +105,6 @@ public class Spatial
             : JTS.spatialObject(space, geometry);
     }
 
-    static
-    {
-        // java.util.logging.Logger.getLogger("").setLevel(Level.FINE);
-    }
-
     public static final int LAT_LON_DIMENSIONS = 2;
     public static final double MIN_LAT = -90;
     public static final double MAX_LAT = 90;
@@ -124,6 +121,25 @@ public class Spatial
                 return new IO();
             }
         };
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Spatial.class);
+    private static final Logger GEOPHILE_LOGGER = Logger.getLogger("");
+
+    static
+    {
+        String geophileLogging = System.getProperty("geophile.logging");
+        Level level;
+        if (geophileLogging == null) {
+            level = Level.OFF;
+        } else {
+            try {
+                level = Level.parse(geophileLogging.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                level = Level.OFF;
+                LOG.warn("Unsupported logging specification for geophile.logging: {}", geophileLogging);
+            }
+        }
+        GEOPHILE_LOGGER.setLevel(level);
+    }
 
     // Inner classes
 

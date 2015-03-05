@@ -71,10 +71,12 @@ public class SpatialColumnHandler
     public void processSpatialObject(Row rowData, Operation operation)
     {
         bind(rowData);
-        long[] zs = zArray();
-        Spatial.shuffle(space, spatialObject, zs);
-        for (int i = 0; i < zs.length && zs[i] != Space.Z_NULL; i++) {
-            operation.handleZValue(zs[i]);
+        if (spatialObject != null) {
+            long[] zs = zArray();
+            Spatial.shuffle(space, spatialObject, zs);
+            for (int i = 0; i < zs.length && zs[i] != Space.Z_NULL; i++) {
+                operation.handleZValue(zs[i]);
+            }
         }
     }
 
@@ -88,45 +90,54 @@ public class SpatialColumnHandler
             double y = Double.NaN;
             for (int d = 0; d < dimensions; d++) {
                 ValueSource source = row.value(positions[d]);
-                TClass tclass = source.getType().typeClass();
-                if (tclass == MNumeric.DECIMAL) {
-                    BigDecimalWrapper wrapper = TBigDecimal.getWrapper(source, tinstances[d]);
-                    coord = wrapper.asBigDecimal().doubleValue();
+                if (!source.isNull()) {
+                    TClass tclass = source.getType().typeClass();
+                    if (tclass == MNumeric.DECIMAL) {
+                        BigDecimalWrapper wrapper = TBigDecimal.getWrapper(source, tinstances[d]);
+                        coord = wrapper.asBigDecimal().doubleValue();
+                    }
+                    else if (tclass == MNumeric.BIGINT) {
+                        coord = source.getInt64();
+                    }
+                    else if (tclass == MNumeric.INT) {
+                        coord = source.getInt32();
+                    }
+                    else {
+                        assert false : row.rowType().table().getColumn(positions[d]);
+                    }
+                    if (d == 0) {
+                        x = coord;
+                    } else {
+                        y = coord;
+                    }
+                    coords[d] = coord;
                 }
-                else if (tclass == MNumeric.BIGINT) {
-                    coord = source.getInt64();
-                }
-                else if (tclass == MNumeric.INT) {
-                    coord = source.getInt32();
-                }
-                else {
-                    assert false : row.rowType().table().getColumn(positions[d]);
-                }
-                if (d == 0) {
-                    x = coord;
-                } else {
-                    y = coord;
-                }
-                coords[d] = coord;
             }
-            spatialObject = new Point(x, y);
+            spatialObject =
+                Double.isNaN(x) || Double.isNaN(y)
+                ? null
+                : new Point(x, y);
         } else {
             ValueSource source = row.value(positions[0]);
-            try {
-                switch (indexMethod) {
-                    case GEO_WKB:
-                        byte[] spatialObjectBytes = ((BlobRef)source.getObject()).getBytes();
-                        spatialObject = Spatial.deserializeWKB(space, spatialObjectBytes);
-                        break;
-                    case GEO_WKT:
-                        String spatialObjectText = source.getString();
-                        spatialObject = Spatial.deserializeWKT(space, spatialObjectText);
-                        break;
-                    default:
-                        assert false : indexMethod;
+            if (source.isNull()) {
+                spatialObject = null;
+            } else {
+                try {
+                    switch (indexMethod) {
+                        case GEO_WKB:
+                            byte[] spatialObjectBytes = ((BlobRef)source.getObject()).getBytes();
+                            spatialObject = Spatial.deserializeWKB(space, spatialObjectBytes);
+                            break;
+                        case GEO_WKT:
+                            String spatialObjectText = source.getString();
+                            spatialObject = Spatial.deserializeWKT(space, spatialObjectText);
+                            break;
+                        default:
+                            assert false : indexMethod;
+                    }
+                } catch (ParseException e) {
+                    throw new InvalidSpatialObjectException();
                 }
-            } catch (ParseException e) {
-                throw new InvalidSpatialObjectException();
             }
         }
     }
