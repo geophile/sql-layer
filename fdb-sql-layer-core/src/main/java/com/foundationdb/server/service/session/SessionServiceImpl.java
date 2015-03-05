@@ -18,10 +18,9 @@
 package com.foundationdb.server.service.session;
 
 import com.foundationdb.server.service.Service;
-import com.foundationdb.server.service.jmx.JmxManageable;
 import java.util.concurrent.atomic.AtomicLong;
 
-public final class SessionServiceImpl implements SessionService, Service, SessionEventListener, JmxManageable {
+public final class SessionServiceImpl implements SessionService, Service, SessionEventListener {
 
     private final AtomicLong sessionsCreated = new AtomicLong();
     private final AtomicLong sessionsClosed = new AtomicLong();
@@ -50,23 +49,6 @@ public final class SessionServiceImpl implements SessionService, Service, Sessio
     @Override
     public void sessionClosing() {
         sessionsClosed.incrementAndGet();
-    }
-
-    // JmxManageable interface
-
-    @Override
-    public JmxObjectInfo getJmxObjectInfo() {
-        return new JmxObjectInfo("Sessions", new SessionServiceMXBean() {
-            @Override
-            public long getCreated() {
-                return countSessionsCreated();
-            }
-
-            @Override
-            public long getClosed() {
-                return countSessionsClosed();
-            }
-        }, SessionServiceMXBean.class);
     }
 
     // Service<SessionService> interface

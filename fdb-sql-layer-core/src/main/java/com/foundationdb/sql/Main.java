@@ -29,11 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.foundationdb.server.error.StartupFailureException;
-import com.foundationdb.server.manage.ManageMXBean;
-import com.foundationdb.server.manage.ManageMXBeanImpl;
 import com.foundationdb.server.service.Service;
 import com.foundationdb.server.service.ServiceManager;
-import com.foundationdb.server.service.jmx.JmxManageable;
 
 import javax.management.ObjectName;
 
@@ -47,7 +44,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
-public class Main implements Service, JmxManageable, LayerInfoInterface
+public class Main implements Service, LayerInfoInterface
 {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
@@ -72,18 +69,12 @@ public class Main implements Service, JmxManageable, LayerInfoInterface
 
     private static volatile ShutdownMXBeanImpl shutdownBean = null;
 
-    private final JmxObjectInfo jmxObjectInfo;
     private final ConfigurationService config;
     private GCMonitor gcMonitor;
 
     @Inject
     public Main(ConfigurationService config) {
         this.config = config;
-        this.jmxObjectInfo = new JmxObjectInfo(
-                "SQLLAYER",
-                new ManageMXBeanImpl(),
-                ManageMXBean.class
-        );
     }
 
     @Override
@@ -108,11 +99,6 @@ public class Main implements Service, JmxManageable, LayerInfoInterface
     @Override
     public void crash() {
         stop();
-    }
-
-    @Override
-    public JmxObjectInfo getJmxObjectInfo() {
-        return jmxObjectInfo;
     }
 
     @Override

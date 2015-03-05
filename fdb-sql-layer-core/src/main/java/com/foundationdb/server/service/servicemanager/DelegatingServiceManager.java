@@ -23,7 +23,6 @@ import com.foundationdb.server.service.ServiceManager;
 import com.foundationdb.server.service.config.ConfigurationService;
 import com.foundationdb.server.service.dxl.DXLService;
 import com.foundationdb.server.service.monitor.MonitorService;
-import com.foundationdb.server.service.jmx.JmxRegistryService;
 import com.foundationdb.server.service.session.SessionService;
 import com.foundationdb.server.service.stats.StatisticsService;
 import com.foundationdb.server.store.SchemaManager;
@@ -71,11 +70,6 @@ public abstract class DelegatingServiceManager implements ServiceManager {
     @Override
     public SchemaManager getSchemaManager() {
         return delegate().getSchemaManager();
-    }
-
-    @Override
-    public JmxRegistryService getJmxRegistryService() {
-        return delegate().getJmxRegistryService();
     }
 
     @Override
