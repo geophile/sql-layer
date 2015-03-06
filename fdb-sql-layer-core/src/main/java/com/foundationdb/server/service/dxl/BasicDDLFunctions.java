@@ -625,22 +625,6 @@ public class BasicDDLFunctions implements DDLFunctions {
     }
 
     @Override
-    public int getGenerationAsInt(Session session) {
-        long full = getGeneration(session);
-        return (int)full ^ (int)(full >>> 32);
-    }
-
-    @Override
-    public long getGeneration(Session session) {
-        return getAIS(session).getGeneration();
-    }
-
-    @Override
-    public long getOldestActiveGeneration() {
-        return schemaManager().getOldestActiveAISGeneration();
-    }
-
-    @Override
     public Set<Long> getActiveGenerations() {
         return schemaManager().getActiveAISGenerations();
     }

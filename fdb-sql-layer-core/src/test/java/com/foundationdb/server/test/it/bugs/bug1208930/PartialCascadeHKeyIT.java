@@ -23,7 +23,6 @@ import com.foundationdb.qp.operator.Operator;
 import com.foundationdb.qp.row.Row;
 import com.foundationdb.qp.rowtype.TableRowType;
 import com.foundationdb.qp.util.SchemaCache;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.test.it.qp.OperatorITBase;
 
 import org.junit.Test;

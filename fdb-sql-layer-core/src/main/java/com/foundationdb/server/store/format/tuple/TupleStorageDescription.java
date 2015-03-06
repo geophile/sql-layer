@@ -30,18 +30,14 @@ import com.foundationdb.ais.protobuf.AISProtobuf.Storage;
 import com.foundationdb.ais.protobuf.FDBProtobuf.TupleUsage;
 import com.foundationdb.ais.protobuf.FDBProtobuf;
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.qp.row.OverlayingRow;
 import com.foundationdb.qp.rowtype.RowType;
 import com.foundationdb.qp.rowtype.Schema;
 import com.foundationdb.server.error.AkibanInternalException;
 import com.foundationdb.server.error.StorageDescriptionInvalidException;
-import com.foundationdb.server.service.blob.BlobRef;
 import com.foundationdb.server.service.session.Session;
 import com.foundationdb.server.store.FDBStore;
 import com.foundationdb.server.store.FDBStoreData;
 import com.foundationdb.server.store.format.FDBStorageDescription;
-import com.foundationdb.server.types.aksql.aktypes.AkBlob;
-import com.foundationdb.server.types.value.ValueSource;
 import com.foundationdb.tuple.ByteArrayUtil;
 import com.foundationdb.tuple.Tuple2;
 import com.persistit.Key;
@@ -102,6 +98,13 @@ public class TupleStorageDescription extends FDBStorageDescription
         if (usage == null) {
             return;
         }
+        if (usage == TupleUsage.KEY_ONLY) {
+            // Derived can provide an alternative row
+            if((object instanceof Group) && (this.getClass() == TupleStorageDescription.class)) {
+                output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "KEY_ONLY not supported for Group")));
+                return;
+            }
+        }
         if (usage == TupleUsage.KEY_AND_ROW) {
             if (!(object instanceof Group)) {
                 output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "is not a Group and has no row")));
@@ -110,10 +113,10 @@ public class TupleStorageDescription extends FDBStorageDescription
         }
         List<String> illegal;
         if (object instanceof Group) {
-            illegal = TupleRowDataConverter.checkTypes((Group)object, usage);
+            illegal = TupleRowConverter.checkTypes((Group)object, usage);
         }
         else if (object instanceof Index) {
-            illegal = TupleRowDataConverter.checkTypes((Index)object, usage);
+            illegal = TupleRowConverter.checkTypes((Index)object, usage);
         }
         else if (object instanceof Sequence) {
             // No types to check
@@ -254,7 +257,7 @@ public class TupleStorageDescription extends FDBStorageDescription
     @Override
     public void packRow (FDBStore store, Session session, FDBStoreData storeData, Row row) {
         if (usage == TupleUsage.KEY_AND_ROW) {
-            Tuple2 t = TupleRowDataConverter.tupleFromRow(row);
+            Tuple2 t = TupleRowConverter.tupleFromRow(row);
             storeData.rawValue = t.pack();
         } else {
             super.packRow(store, session, storeData, row);
@@ -268,9 +271,9 @@ public class TupleStorageDescription extends FDBStorageDescription
             Tuple2 tuple = Tuple2.fromBytes(storeData.rawValue);
             Table table = tableFromOrdinals((Group)object, storeData.persistitKey);
             RowType rowType = schema.tableRowType(table);
-            Row row = TupleRowDataConverter.tupleToRow(tuple, rowType);
+            Row row = TupleRowConverter.tupleToRow(tuple, rowType);
             row = overlayBlobData(rowType, row, store, session);
-            return row; 
+            return row;
         } else {
             return super.expandRow(store, session, storeData, schema);
         }

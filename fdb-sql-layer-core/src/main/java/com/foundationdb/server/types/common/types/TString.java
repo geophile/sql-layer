@@ -187,21 +187,6 @@ public abstract class TString extends TClass
         return maxWidth * type.attribute(StringAttribute.MAX_LENGTH);
     }
 
-    private int maxCharacterWidth(TInstance type) {
-        return 1;
-    }
-
-    @Override
-    public Object formatCachedForNiceRow(ValueSource source) {
-        Object obj = source.getObject(); 
-        if (obj instanceof ByteSource) {
-            return StringCacher.getString((ByteSource)source.getObject(), source.getType());
-        } else {
-            assert obj instanceof String : "Value source object not ByteSource nor String: " + source;
-            return obj;
-        }
-    }
-
     public static AkCollator mergeAkCollators(CharacterTypeAttributes type1Atts, CharacterTypeAttributes type2Atts) {
         CharacterTypeAttributes att;
         try {

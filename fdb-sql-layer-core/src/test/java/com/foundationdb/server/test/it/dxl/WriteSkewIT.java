@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import com.foundationdb.ais.model.TableName;
 import com.foundationdb.server.error.InvalidOperationException;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.service.session.Session;
 import com.foundationdb.server.test.it.ITBase;
 
@@ -43,16 +42,16 @@ public class WriteSkewIT extends ITBase
     public void testHKeyMaintenance() throws InterruptedException
     {
         createDatabase();
-        writeRow(parentRowDef.getRowDefId(), 1, 100);
-        writeRow(parentRowDef.getRowDefId(), 2, 200);
-        writeRow(childRowDef.getRowDefId(), 1, 1, 1100);
-        writeRow(grandchildRowDef.getRowDefId(), 1, 1, 11100);
+        writeRow(parent, 1, 100);
+        writeRow(parent, 2, 200);
+        writeRow(child, 1, 1, 1100);
+        writeRow(grandchild, 1, 1, 11100);
         TestThread threadA = new TestThread("a")
         {
             @Override
             public void doAction()
             {
-                writeRow(threadPrivateSession, childRowDef.getRowDefId(), 2, 2, 2200);
+                writeRow(threadPrivateSession, child, 2, 2, 2200);
             }
         };
         TestThread threadB = new TestThread("b")
@@ -60,7 +59,7 @@ public class WriteSkewIT extends ITBase
             @Override
             public void doAction()
             {
-                writeRow(threadPrivateSession, grandchildRowDef.getRowDefId(), 2, 2, 22200);
+                writeRow(threadPrivateSession, grandchild, 2, 2, 22200);
             }
         };
         runTest(
@@ -88,14 +87,14 @@ public class WriteSkewIT extends ITBase
     public void testGroupIndexMaintenance() throws InterruptedException
     {
         createDatabase();
-        writeRow(parentRowDef.getRowDefId(), 1, 100);
-        writeRow(childRowDef.getRowDefId(), 11, 1, 1100);
+        writeRow(parent, 1, 100);
+        writeRow(child, 11, 1, 1100);
         TestThread threadA = new TestThread("a")
         {
             @Override
             public void doAction()
             {
-                writeRow(threadPrivateSession, parentRowDef.getRowDefId(), 2, 2200);
+                writeRow(threadPrivateSession, parent, 2, 2200);
             }
         };
         TestThread threadB = new TestThread("b")
@@ -104,8 +103,8 @@ public class WriteSkewIT extends ITBase
             public void doAction()
             {
                 updateRow(threadPrivateSession,
-                          row(threadPrivateSession, childRowDef.getRowDefId(), 11, 1, 1100),
-                          row(threadPrivateSession, childRowDef.getRowDefId(), 11, 2, 1100));
+                          row(threadPrivateSession, child, 11, 1, 1100),
+                          row(threadPrivateSession, child, 11, 2, 1100));
             }
         };
         runTest(
@@ -172,19 +171,13 @@ public class WriteSkewIT extends ITBase
                                  "z int",
                                  "primary key(gid)",
                                  "grouping foreign key(cid) references child(cid)");
-        parentRowDef = getRowDef(parent);
-        childRowDef = getRowDef(child);
-        grandchildRowDef = getRowDef(grandchild);
         createLeftGroupIndex(TableName.create(SCHEMA, "parent"), groupIndexName, "parent.x", "child.y");
     }
 
     private int parent;
     private int child;
     private int grandchild;
-    private RowDef parentRowDef;
-    private RowDef childRowDef;
-    private RowDef grandchildRowDef;
-    
+
     private final AtomicBoolean exceptionInAnyThread = new AtomicBoolean(false);
     private final String groupIndexName = "idx_pxcy";
     

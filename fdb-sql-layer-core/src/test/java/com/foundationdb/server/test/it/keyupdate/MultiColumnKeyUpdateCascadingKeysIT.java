@@ -19,10 +19,8 @@ package com.foundationdb.server.test.it.keyupdate;
 
 import com.foundationdb.qp.row.Row;
 import com.foundationdb.qp.rowtype.RowType;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.error.ErrorCode;
 import com.foundationdb.server.error.InvalidOperationException;
-import com.foundationdb.server.rowdata.RowDef;
 
 import org.junit.Test;
 

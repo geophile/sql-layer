@@ -17,7 +17,7 @@
 
 package com.foundationdb.server.test.mt.util;
 
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.service.dxl.OnlineDDLMonitor;
 import com.foundationdb.server.service.session.Session;
 import com.foundationdb.server.test.mt.util.ThreadMonitor.Stage;

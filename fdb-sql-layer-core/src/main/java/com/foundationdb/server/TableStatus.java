@@ -19,12 +19,9 @@ package com.foundationdb.server;
 
 import com.foundationdb.server.service.session.Session;
 
-/**
- * Structure denotes summary information about a table, including row count,
- * uniqueId and auto-increment values. In general there is one TableStatus per
- * RowDef, and each object refers to the other.
- */
-public interface TableStatus {
+/** Per-table row count management. */
+public interface TableStatus
+{
     /** Record that a row has been deleted. */
     void rowDeleted(Session session);
 
@@ -46,6 +43,4 @@ public interface TableStatus {
 
     /** @return The table ID this status is for */
     int getTableID();
-
-    void setRowCount(Session session, long rowCount);
 }

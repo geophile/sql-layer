@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.foundationdb.ais.model.Index;
-import com.foundationdb.server.api.dml.scan.NewRow;
 
 public class GroupIndexCascadeUpdateIT extends GIUpdateITBase {
     private static final Logger LOG = LoggerFactory.getLogger(GroupIndexCascadeUpdateIT.class);

@@ -38,7 +38,7 @@ import com.foundationdb.server.store.FDBStore;
 import com.foundationdb.server.store.FDBStoreData;
 import com.foundationdb.server.store.FDBTransactionService.TransactionState;
 import com.foundationdb.server.store.format.FDBStorageDescription;
-import com.foundationdb.server.store.format.tuple.TupleRowDataConverter;
+import com.foundationdb.server.store.format.tuple.TupleRowConverter;
 import com.foundationdb.server.store.format.tuple.TupleStorageDescription;
 import com.foundationdb.server.types.value.ValueSources;
 import com.foundationdb.tuple.ByteArrayUtil;
@@ -97,7 +97,7 @@ public class ColumnKeysStorageDescription extends FDBStorageDescription
             output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "is not a Group")));
             return;
         }
-        List<String> illegal = TupleRowDataConverter.checkTypes((Group)object, TupleUsage.KEY_AND_ROW);
+        List<String> illegal = TupleRowConverter.checkTypes((Group)object, TupleUsage.KEY_AND_ROW);
         if (!illegal.isEmpty()) {
             output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "has some types that cannot be stored in a Tuple: " + illegal)));
         }

@@ -19,7 +19,6 @@ package com.foundationdb.server;
 
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.qp.virtualadapter.VirtualScanFactory;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.service.session.Session;
 
 public interface TableStatusCache {
@@ -31,9 +30,6 @@ public interface TableStatusCache {
      * serviced by the given factory. These are saved by the TableStatusCache.
      */
     TableStatus getOrCreateVirtualTableStatus(int tableID, VirtualScanFactory factory);
-
-    /** Clean up any AIS associated state stored by this cache or any of its TableStatuses. */
-    void detachAIS();
 
     /** Permanently remove any state associated with the given table. */
     void clearTableStatus(Session session, Table table);

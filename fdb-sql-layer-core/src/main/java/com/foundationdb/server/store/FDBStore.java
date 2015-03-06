@@ -939,7 +939,7 @@ public class FDBStore extends AbstractStore<FDBStore,FDBStoreData,FDBStorageDesc
             txn.getIndexChecks(false) == null) {
             check.blockUntilReady(txn);
             if (!check.check(session, txn, index)) {
-                // Using RowData, can give better error than check.throwException().
+                // Using Row, can give better error than check.throwException().
                 String msg = formatIndexRowString(session, row, index);
                 throw new DuplicateKeyException(index.getIndexName(), msg);
             }

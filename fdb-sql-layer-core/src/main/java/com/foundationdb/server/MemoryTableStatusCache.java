@@ -30,7 +30,6 @@ import java.util.Map;
 
 import static com.foundationdb.server.store.MemoryStore.join;
 import static com.foundationdb.server.store.MemoryStore.packLong;
-import static com.foundationdb.server.store.MemoryStore.packUUID;
 import static com.foundationdb.server.store.MemoryStore.unpackLong;
 
 public class MemoryTableStatusCache implements TableStatusCache
@@ -65,11 +64,6 @@ public class MemoryTableStatusCache implements TableStatusCache
             virtualTableStatusMap.put(tableID, status);
         }
         return status;
-    }
-
-    @Override
-    public void detachAIS() {
-        // None
     }
 
     @Override
@@ -139,8 +133,7 @@ public class MemoryTableStatusCache implements TableStatusCache
             return tableID;
         }
 
-        @Override
-        public void setRowCount(Session session, long rowCount) {
+        private void setRowCount(Session session, long rowCount) {
             MemoryTransaction txn = txnService.getTransaction(session);
             txn.set(statusKey, packLong(rowCount));
         }

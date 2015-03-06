@@ -109,7 +109,7 @@ public class TableIndex extends Index
             // TODO: supports spatial indexes, they'll be born as spatial, and we won't have to recompute
             // TODO: field associations after the fact.
             // By the way, it might actually safe to remove the reliance on ordinalMap and always get
-            // the ordinal from the rowdef.
+            // the ordinal from the Table.
             Integer ordinal =
                 ordinalMap == null
                 ? hKeySegment.table().getOrdinal()

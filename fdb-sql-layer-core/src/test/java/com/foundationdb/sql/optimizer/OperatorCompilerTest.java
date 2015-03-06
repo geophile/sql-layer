@@ -110,7 +110,7 @@ public class OperatorCompilerTest extends NamedParamsTestBase
                                                   File statsFile,
                                                   Properties properties) 
                 throws IOException {
-            RulesTestHelper.ensureRowDefs(ais);
+            RulesTestHelper.ensureFieldAssociations(ais);
             TestOperatorCompiler compiler = new TestOperatorCompiler();
             compiler.initProperties(properties);
             compiler.initAIS(ais, OptimizerTestBase.DEFAULT_SCHEMA);

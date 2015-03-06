@@ -22,10 +22,9 @@ import java.util.Iterator;
 /**
  * A storage iterator is an <code>Iterator<Void></code> is stored in the
  * <code>iterator</code> field of a <code>FDBStoreData</code>. When advanced, it modifies
- * the state of the <code>FDBStoreData</code> so that {@link FDBStore#unpackTuple}
+ * the state of the <code>FDBStoreData</code> so that {@link FDBStoreDataHelper#unpackKey}
  * can be called to fill the <code>persistitKey</code> field and, in the case of
- * Group iterators, {@link FDBStore#expandRowData} can be called to fill a
- * <code>RowData</code>.<p>
+ * Group iterators, {@link FDBStore#expandRow} can be called.
  * Normally, this is just a matter of copying the key/value pair of byte arrays into
  * the <code>rawKey</code> and <code>rawValue</code> fields.
  */

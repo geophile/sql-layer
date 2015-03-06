@@ -275,7 +275,7 @@ public enum ErrorCode {
     NO_SUCH_TABLE           ("42", "501", Importance.DEBUG, NoSuchTableException.class), 
     NO_INDEX                ("42", "502", Importance.DEBUG, NoSuchIndexException.class),
     NO_SUCH_GROUP           ("42", "503", Importance.DEBUG, NoSuchGroupException.class), 
-    NO_SUCH_TABLEDEF        ("42", "504", Importance.DEBUG, RowDefNotFoundException.class),
+    //42504
     NO_SUCH_TABLEID         ("42", "505", Importance.DEBUG, NoSuchTableIdException.class),
     AMBIGUOUS_COLUMN_NAME   ("42", "506", Importance.DEBUG, AmbiguousColumNameException.class),
     SUBQUERY_RESULT_FAIL    ("42", "507", Importance.DEBUG, SubqueryResultsSetupException.class),

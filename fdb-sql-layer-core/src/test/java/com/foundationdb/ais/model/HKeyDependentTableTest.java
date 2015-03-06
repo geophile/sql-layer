@@ -17,7 +17,7 @@
 
 package com.foundationdb.ais.model;
 
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import org.junit.Test;
 
 import java.util.*;

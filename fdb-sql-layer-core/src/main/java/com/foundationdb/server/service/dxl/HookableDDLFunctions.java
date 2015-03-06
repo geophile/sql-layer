@@ -28,7 +28,6 @@ import com.foundationdb.ais.model.TableName;
 import com.foundationdb.ais.model.View;
 import com.foundationdb.ais.util.TableChange;
 import com.foundationdb.qp.operator.QueryContext;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.api.DDLFunctions;
 import com.foundationdb.server.service.dxl.DXLFunctionsHook.DXLFunction;
 import com.foundationdb.server.service.session.Session;
@@ -391,56 +390,6 @@ public final class HookableDDLFunctions implements DDLFunctions {
             throw throwAlways(t);
         } finally {
             hook.hookFunctionFinally(session, DXLFunction.GET_USER_TABLE_BY_ID, thrown);
-        }
-    }
-
-   @Override
-    public int getGenerationAsInt(Session session) {
-        Throwable thrown = null;
-        try {
-            hook.hookFunctionIn(session, DXLFunction.GET_SCHEMA_ID);
-            return delegate.getGenerationAsInt(session);
-        } catch (Throwable t) {
-            thrown = t;
-            hook.hookFunctionCatch(session, DXLFunction.GET_SCHEMA_ID, t);
-            throw throwAlways(t);
-        } finally {
-            hook.hookFunctionFinally(session, DXLFunction.GET_SCHEMA_ID, thrown);
-        }
-    }
-
-    @Override
-    public long getGeneration(Session session) {
-        Throwable thrown = null;
-        try {
-            hook.hookFunctionIn(session, DXLFunction.GET_SCHEMA_TIMESTAMP);
-            return delegate.getGeneration(session);
-        } catch (Throwable t) {
-            thrown = t;
-            hook.hookFunctionCatch(session, DXLFunction.GET_SCHEMA_TIMESTAMP, t);
-            throw throwAlways(t);
-        } finally {
-            hook.hookFunctionFinally(session, DXLFunction.GET_SCHEMA_TIMESTAMP, thrown);
-        }
-    }
-
-    @Override
-    public long getOldestActiveGeneration() {
-        Session session = sessionService.createSession();
-        Throwable thrown = null;
-        try {
-            hook.hookFunctionIn(session, DXLFunction.GET_OLDEST_ACTIVE_GENERATION);
-            return delegate.getOldestActiveGeneration();
-        } catch (Throwable t) {
-            thrown = t;
-            hook.hookFunctionCatch(session, DXLFunction.GET_OLDEST_ACTIVE_GENERATION, t);
-            throw throwAlways(t);
-        } finally {
-            try {
-                hook.hookFunctionFinally(session, DXLFunction.GET_OLDEST_ACTIVE_GENERATION, thrown);
-            } finally {
-                session.close();
-            }
         }
     }
 

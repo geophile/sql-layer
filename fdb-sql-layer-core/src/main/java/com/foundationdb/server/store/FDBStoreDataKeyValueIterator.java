@@ -28,10 +28,10 @@ import com.foundationdb.util.tap.InOutTap;
 /**
  * Only takes care of the immediate copy of the key-value pair
  * into the <code>raw</code> fields.  Caller must deal with these
- * further, using {@link #unpackKey} and {@link #unpackValue} or
- * {@link #expandRowData}.
+ * further, using unpackKey, unpackValue or expandRow.
  */
-public class FDBStoreDataKeyValueIterator extends FDBStoreDataIterator
+public class
+    FDBStoreDataKeyValueIterator extends FDBStoreDataIterator
 {
     private final AsyncIterator<KeyValue> underlying;
     private static final InOutTap TAP_NEXT = OPERATOR_TAP.createSubsidiaryTap("operator: FDB Value Iterator");

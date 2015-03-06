@@ -33,7 +33,7 @@ import com.foundationdb.qp.row.Row;
 import com.foundationdb.qp.row.ValuesHolderRow;
 import com.foundationdb.qp.rowtype.RowType;
 import com.foundationdb.qp.rowtype.Schema;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.Descriptors.FileDescriptor;
@@ -134,7 +134,7 @@ public class ProtobufRowConverterTest {
     private static final String SCHEMA = "test";
 
     protected AkibanInformationSchema ais(String ddl) {
-        AkibanInformationSchema ais = new SchemaFactory(SCHEMA).aisWithRowDefs(ddl);
+        AkibanInformationSchema ais = new SchemaFactory(SCHEMA).aisWithTableStatus(ddl);
         for (Table table : ais.getTables().values()) {
             if (!table.hasVersion()) {
                 table.setVersion(0);

@@ -50,9 +50,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TupleRowDataConverter
+public class TupleRowConverter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(TupleRowDataConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TupleRowConverter.class);
 
     static final Set<TClass> ALLOWED_CLASSES = new HashSet<>(Arrays.asList(
         MNumeric.BIGINT, MNumeric.BIGINT_UNSIGNED, MNumeric.INT, MNumeric.INT_UNSIGNED,

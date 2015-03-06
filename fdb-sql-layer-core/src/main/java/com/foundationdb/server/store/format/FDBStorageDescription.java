@@ -18,7 +18,6 @@
 package com.foundationdb.server.store.format;
 
 import com.foundationdb.ais.model.HasStorage;
-import com.foundationdb.ais.model.StorageDescription;
 import com.foundationdb.ais.model.validation.AISValidationFailure;
 import com.foundationdb.ais.model.validation.AISValidationOutput;
 import com.foundationdb.ais.protobuf.AISProtobuf.Storage;
@@ -60,7 +59,7 @@ import static com.foundationdb.server.store.FDBStoreDataHelper.*;
  * As a result, there is no possibility of duplicate names and no need
  * of name generation.
 */
-public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBStoreData>
+public abstract class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBStoreData>
 {
     private byte[] prefixBytes;
     private static final Logger LOG = LoggerFactory.getLogger(FDBStorageDescription.class);
@@ -69,24 +68,9 @@ public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBS
         super(forObject, storageFormat);
     }
 
-    public FDBStorageDescription(HasStorage forObject, byte[] prefixBytes, String storageFormat) {
-        super(forObject, storageFormat);
-        this.prefixBytes = prefixBytes;
-    }
-
     public FDBStorageDescription(HasStorage forObject, FDBStorageDescription other, String storageFormat) {
         super(forObject, other, storageFormat);
         this.prefixBytes = other.prefixBytes;
-    }
-
-    @Override
-    public StorageDescription cloneForObject(HasStorage forObject) {
-        return new FDBStorageDescription(forObject, this, storageFormat);
-    }
-    
-    @Override
-    public StorageDescription cloneForObjectWithoutState(HasStorage forObject) {
-        return new FDBStorageDescription(forObject, storageFormat);
     }
 
     @Override
@@ -146,16 +130,16 @@ public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBS
             output.reportFailure(new AISValidationFailure(new StorageDescriptionInvalidException(object, "is missing prefix bytes")));
         }
     }
-    
+
     @Override
     public Row expandRow (FDBStore store, Session session, FDBStoreData storeData, Schema schema) {
-        return FDBStoreDataHelper.expandRow(schema, storeData);
+        throw new UnsupportedOperationException();
     }
-    
+
     @Override
-    public void packRow (FDBStore store, Session session, 
+    public void packRow (FDBStore store, Session session,
                             FDBStoreData storeData, Row row) {
-        FDBStoreDataHelper.packRow(row, storeData);
+        throw new UnsupportedOperationException();
     }
 
     /** Convert Persistit <code>Key</code> into raw key. */
@@ -229,8 +213,8 @@ public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBS
     }
     
     /** Store contents of <code>storeData</code> into database.  
-     * Usually, key comes from <code>storeData.rawKey</code> via {@link getKeyBytes}
-     * and value comes from <code>storeData.rawValue</code> via {@link #packRowData}.
+     * Usually, key comes from <code>storeData.rawKey</code> via {@link FDBStoreDataHelper#packKey}
+     * and value comes from <code>storeData.rawValue</code> via {@link #packRow}.
      */
     public void store(FDBStore store, Session session, FDBStoreData storeData) {
         if (storeData.persistitValue != null) {
@@ -242,8 +226,8 @@ public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBS
     }
 
     /** Fetch contents of database into <code>storeData</code>.
-     * Usually, key comes from <code>storeData.rawKey</code> via {@link getKeyBytes}
-     * and value goes into <code>storeData.rawValue</code> for {@link #expandRowData}.
+     * Usually, key comes from <code>storeData.rawKey</code> via {@link FDBStoreDataHelper#packKey}
+     * and value comes from <code>storeData.rawValue</code> via {@link #packRow}.
      */
     public boolean fetch(FDBStore store, Session session, FDBStoreData storeData) {
         storeData.rawValue = store.getTransaction(session, storeData).getValue(storeData.rawKey);
@@ -251,7 +235,7 @@ public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBS
     }
 
     /** Clear contents of database based on <code>storeData</code>.
-     * Usually, key comes from <code>storeData.rawKey</code> via {@link getKeyBytes}.
+     * Usually, key comes from <code>storeData.rawKey</code> via {@link FDBStoreDataHelper#packKey}.
      */
     public void clear(FDBStore store, Session session, FDBStoreData storeData) {
         TransactionState txn = store.getTransaction(session, storeData);
@@ -311,7 +295,6 @@ public class FDBStorageDescription extends StoreStorageDescription<FDBStore,FDBS
      * @param startInclusive Include key itself in result.
      * @param endInclusive Include end key in result. 
      * @param reverse Iterate in reverse.
-     * @param snapshot Snapshot range scan
      */
     public void indexIterator(FDBStore store, Session session, FDBStoreData storeData,
                               boolean key, boolean startInclusive, boolean endInclusive, boolean reverse,

@@ -36,11 +36,6 @@ public class VirtualTableStatus implements TableStatus
     }
 
     @Override
-    public synchronized void setRowCount(Session session, long rowCount) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public long getApproximateRowCount(Session session) {
         return getRowCount(session);
     }

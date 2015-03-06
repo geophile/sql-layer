@@ -19,7 +19,7 @@ package com.foundationdb.sql.optimizer.rule;
 
 import com.foundationdb.ais.model.AkibanInformationSchema;
 
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -64,9 +64,8 @@ public class RulesTestHelper
         return result;
     }
 
-    // Make fake row def cache to keep TableRowType constructor
-    // and Index.getAllColumns() from getting NPE.
-    public static void ensureRowDefs(AkibanInformationSchema ais) {
-        new SchemaFactory().buildRowDefs(ais);
+    // Field associations needed to keep Index.getAllColumns() from getting NPE.
+    public static void ensureFieldAssociations(AkibanInformationSchema ais) {
+        new SchemaFactory().buildTableStatusAndFieldAssociations(ais);
     }
 }

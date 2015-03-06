@@ -90,18 +90,12 @@ public class DXLTransactionHook implements DXLFunctionsHook {
                 return true;
 
             // Remaining methods on DDL interface, querying only
-            case GET_DDLS:
             case UPDATE_TABLE_STATISTICS:
             case GET_AIS:
             case GET_TABLE_ID:
             case GET_TABLE_BY_ID:
             case GET_TABLE_BY_NAME:
-            case GET_USER_TABLE_BY_NAME:
             case GET_USER_TABLE_BY_ID:
-            case GET_ROWDEF:
-            case GET_SCHEMA_ID:
-            case GET_SCHEMA_TIMESTAMP:
-            case GET_OLDEST_ACTIVE_GENERATION:
             case GET_ACTIVE_GENERATIONS:
                 return true;
 

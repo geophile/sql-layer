@@ -27,7 +27,7 @@ import com.foundationdb.ais.model.Index;
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.ais.model.TestAISBuilder;
 import com.foundationdb.qp.rowtype.Schema;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.types.service.TypesRegistryService;
 import com.foundationdb.server.types.service.TypesRegistryServiceImpl;
 import com.persistit.Key;
@@ -414,7 +414,7 @@ public class ValuesHKeyTest {
         builder.groupingIsComplete();
         
         SchemaFactory factory = new SchemaFactory ("schema");
-        factory.buildRowDefs(builder.akibanInformationSchema());
+        factory.buildTableStatusAndFieldAssociations(builder.akibanInformationSchema());
         return new Schema(builder.akibanInformationSchema());
     }
 

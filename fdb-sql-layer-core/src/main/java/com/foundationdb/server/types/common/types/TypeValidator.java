@@ -29,7 +29,7 @@ public class TypeValidator
     }
 
     // TODO: Some of these are properly constraints on the
-    // store. Revisit when RowData is no longer the default.
+    // store and should be revisited.
 
     public static boolean isSupportedForColumn(TInstance type) {
         TClass tclass = TInstance.tClass(type);

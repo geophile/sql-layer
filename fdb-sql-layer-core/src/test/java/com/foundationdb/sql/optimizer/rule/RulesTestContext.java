@@ -42,7 +42,7 @@ public class RulesTestContext extends SchemaRulesContext
         RulesTestContext context = new RulesTestContext();
         context.initProperties(properties);
         context.initRules(rules);
-        RulesTestHelper.ensureRowDefs(ais);
+        RulesTestHelper.ensureFieldAssociations(ais);
         context.initAIS(ais);
         context.initCostEstimator(new TestCostEstimator(ais, context.getSchema(), 
                                                         statsFile, statsIgnoreMissingIndexes,

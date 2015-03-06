@@ -19,7 +19,6 @@ package com.foundationdb.server.test.it.keyupdate;
 
 import com.foundationdb.ais.model.Index;
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import org.junit.Test;
 
 public final class GroupIndexRjUpdateIT extends GIUpdateITBase {

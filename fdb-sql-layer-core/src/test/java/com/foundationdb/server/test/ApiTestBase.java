@@ -50,6 +50,7 @@ import com.foundationdb.qp.rowtype.IndexRowType;
 import com.foundationdb.qp.rowtype.RowType;
 import com.foundationdb.qp.util.SchemaCache;
 import com.foundationdb.server.service.blob.LobService;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.store.FDBHolder;
 import com.foundationdb.server.store.FDBStore;
 import com.foundationdb.ais.AISCloner;
@@ -72,8 +73,6 @@ import com.foundationdb.server.types.value.ValueSource;
 import com.foundationdb.server.types.value.ValueSources;
 import com.foundationdb.sql.LayerInfoInterface;
 import com.foundationdb.server.AkServerUtil;
-import com.foundationdb.server.rowdata.RowDef;
-import com.foundationdb.server.rowdata.SchemaFactory;
 import com.foundationdb.server.service.ServiceManagerImpl;
 import com.foundationdb.server.service.config.ConfigurationService;
 import com.foundationdb.server.service.config.TestConfigService;
@@ -107,7 +106,6 @@ import com.foundationdb.server.store.Store;
 
 import com.foundationdb.server.api.DDLFunctions;
 import com.foundationdb.server.api.DMLFunctions;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.error.InvalidOperationException;
 import com.foundationdb.server.error.NoSuchTableException;
 import com.foundationdb.server.service.ServiceManager;
@@ -1071,11 +1069,6 @@ public class ApiTestBase {
         return array(Object.class, items);
     }
 
-    protected static <T> T get(NewRow row, int field, Class<T> castAs) {
-        Object obj = row.get(field);
-        return castAs.cast(obj);
-    }
-
     public static Object getObject(ValueSource value) {
         if (value.isNull())
             return null;
@@ -1187,10 +1180,6 @@ public class ApiTestBase {
     protected void expectRows(Schema schema, Operator plan, boolean skipInternal, Collection<Row> expectedRows) {
         List<Row> actual = runPlan(session(), schema, plan);
         compareRows(expectedRows, actual, skipInternal);
-    }
-
-    public Row row(RowDef rowDef, Object... fields) {
-        return row(rowDef.table(), fields);
     }
 
     public Row row(Table table, Object... fields) {
@@ -1313,10 +1302,6 @@ public class ApiTestBase {
 
     protected final Table getTable(TableName name) {
         return ddl().getTable(session(), name);
-    }
-
-    protected final RowDef getRowDef(int rowDefId) {
-        return getTable(rowDefId).rowDef();
     }
 
     protected final RowType getRowType (int tableId) {

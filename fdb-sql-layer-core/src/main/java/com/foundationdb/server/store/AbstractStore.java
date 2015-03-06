@@ -65,7 +65,6 @@ import com.foundationdb.util.AkibanAppender;
 import com.foundationdb.util.tap.InOutTap;
 import com.foundationdb.util.tap.PointTap;
 import com.foundationdb.util.tap.Tap;
-import com.geophile.z.space.SpaceImpl;
 import com.persistit.Key;
 
 import org.slf4j.Logger;
@@ -141,7 +140,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
     /** Create an iterator to visit all descendants of the current key. */
     protected abstract Iterator<Void> createDescendantIterator(Session session, SDType storeData);
 
-    /** Read the index row for the given RowData or null if not present. storeData has been initialized for index. */
+    /** Read the index row for the given Row or null if not present. storeData has been initialized for index. */
     protected abstract IndexRow readIndexRow(Session session , Index parentPKIndex, SDType storeData, Row row);
     
     /** Called when a non-serializable store would need a row lock. */
@@ -212,7 +211,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
                     }
                     ++i2hPosition;
                 } else {
-                    // HKey column from rowData
+                    // HKey column from row
                     Column column = hKeyColumn.column();
                     hKeyAppender.append(row.value(column.getPosition()), column);
                 }
@@ -270,7 +269,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
         
     }
     
-    /** Build a user-friendly representation of the Index row for the given RowData. */
+    /** Build a user-friendly representation of the Index row for the given Row. */
     protected String formatIndexRowString(Session session, Row row, Index index) {
         StringBuilder sb = new StringBuilder();
         AkibanAppender appender = AkibanAppender.of(sb);
@@ -341,7 +340,7 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
                             
     private void updateRow (Session session, Row oldRow, Row newRow, boolean propagateHKeyChanges) {
         Group group = oldRow.rowType().table().getGroup();
-        // RowDefs may be different during an ALTER. Only non-PK/FK columns change in this scenario.
+        // RowTypes may be different during an ALTER. Only non-PK/FK columns change in this scenario.
         SDType storeData = createStoreData(session, group);
 
         UPDATE_ROW_TAP.in();
@@ -535,12 +534,6 @@ public abstract class AbstractStore<SType extends AbstractStore,SDType,SSDType e
         truncateIndexes(session, group.getIndexes());
         // Group tree
         truncateTree(session, group);
-    }
-
-    @Override
-    public void truncateTableStatus(final Session session, final int rowDefId) {
-        Table table = getAIS(session).getTable(rowDefId);
-        table.tableStatus().truncate(session);
     }
 
     @Override

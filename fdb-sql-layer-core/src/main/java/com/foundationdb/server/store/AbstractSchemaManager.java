@@ -42,7 +42,10 @@ import com.foundationdb.ais.model.View;
 import com.foundationdb.ais.model.validation.AISInvariants;
 import com.foundationdb.ais.protobuf.ProtobufWriter;
 import com.foundationdb.ais.util.ChangedTableDescription;
+import com.foundationdb.qp.virtualadapter.VirtualAdapter;
 import com.foundationdb.qp.virtualadapter.VirtualScanFactory;
+import com.foundationdb.server.TableStatus;
+import com.foundationdb.server.TableStatusCache;
 import com.foundationdb.server.collation.AkCollatorFactory;
 import com.foundationdb.server.error.DuplicateRoutineNameException;
 import com.foundationdb.server.error.DuplicateSQLJJarNameException;
@@ -135,14 +138,15 @@ public abstract class AbstractSchemaManager implements Service, SchemaManager {
     // Derived
     //
 
+    protected abstract TableStatusCache getTableStatusCache();
     protected abstract NameGenerator getNameGenerator(Session session);
     /** Get the primary (i.e. *not* online) AIS for {@code session}. Load from disk if necessary. */
     protected abstract  AkibanInformationSchema getSessionAIS(Session session);
-    /** validateAndFreeze, checkAndSerialize, buildRowDefs */
+    /** validateAndFreeze, checkAndSerialize, buildTableStatus */
     protected abstract void storedAISChange(Session session,
                                             AkibanInformationSchema newAIS,
                                             Collection<String> schemas);
-    /** validateAndFreeze, serializeVirtualTables, buildRowDefs */
+    /** validateAndFreeze, serializeVirtualTables, buildTableStatus */
     protected abstract void unStoredAISChange(Session session, AkibanInformationSchema newAIS);
     /** Called immediately prior to {@link #storedAISChange} when renaming a table */
     protected abstract void renamingTable(Session session, TableName oldName, TableName newName);
@@ -152,7 +156,7 @@ public abstract class AbstractSchemaManager implements Service, SchemaManager {
     protected abstract void bumpGeneration(Session session);
     /** Generate and save a new ID. */
     protected abstract long generateSaveOnlineSessionID(Session session);
-    /** validateAndFreeze, checkAndSerialize, buildRowDefs. */
+    /** validateAndFreeze, checkAndSerialize, buildTableStatus */
     protected abstract void storedOnlineChange(Session session,
                                                OnlineSession onlineSession,
                                                AkibanInformationSchema newAIS,
@@ -222,6 +226,23 @@ public abstract class AbstractSchemaManager implements Service, SchemaManager {
             LOG.trace("Table {} now at version {}", tableID, newVersion);
         }
         newTableVersions(session, newVersions);
+    }
+
+    protected void buildTableStatusAndFieldAssociations(Session session, AkibanInformationSchema newAIS) {
+        Map<Table,Integer> ordinalMap = createOrdinalMap(newAIS);
+        for(Table table : newAIS.getTables().values()) {
+            // Field Associations
+            table.computeFieldAssociations(ordinalMap);
+            // Table Status
+            TableStatus status;
+            if(table.isVirtual()) {
+                status = getTableStatusCache().getOrCreateVirtualTableStatus(table.getTableId(),
+                                                                             VirtualAdapter.getFactory(table));
+            } else {
+                status = getTableStatusCache().createTableStatus(table);
+            }
+            table.tableStatus(status);
+        }
     }
 
 
@@ -1244,4 +1265,15 @@ public abstract class AbstractSchemaManager implements Service, SchemaManager {
             session.remove(ONLINE_SESSION_KEY);
         }
     };
+
+    /** @return Map of Table->Ordinal for all Tables in the AIS */
+    private static Map<Table,Integer> createOrdinalMap(AkibanInformationSchema ais) {
+        Map<Table,Integer> ordinalMap = new HashMap<>();
+        for(Table table : ais.getTables().values()) {
+            Integer ordinal = table.getOrdinal();
+            assert ordinal != null : "Null ordinal: " + table;
+            ordinalMap.put(table, ordinal);
+        }
+        return ordinalMap;
+    }
 }

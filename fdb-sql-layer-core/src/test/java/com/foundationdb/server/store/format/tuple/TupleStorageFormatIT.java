@@ -73,39 +73,10 @@ public class TupleStorageFormatIT  extends FDBITBase
         txnService().commitTransaction(session());
     }
     
-    @Test
+    @Test(expected=StorageDescriptionInvalidException.class)
     public void keyOnly() {
         createFromDDL(SCHEMA,
-          "CREATE TABLE parent(id INT PRIMARY KEY NOT NULL, s VARCHAR(128)) STORAGE_FORMAT tuple(key_only = true);" +
-          "CREATE TABLE child(id INT PRIMARY KEY NOT NULL, pid INT, GROUPING FOREIGN KEY(pid) REFERENCES parent(id), s VARCHAR(128));");
-        int parent = ddl().getTableId(session(), new TableName(SCHEMA, "parent"));
-        int child = ddl().getTableId(session(), new TableName(SCHEMA, "child"));
-
-        Schema schema = SchemaCache.globalSchema(ddl().getAIS(session()));
-        RowType parentType = schema.tableRowType(getTable(parent)); 
-        RowType childType = schema.tableRowType(getTable(child));
-        StoreAdapter adapter = newStoreAdapter();
-
-        txnService().beginTransaction(session());
-
-        Object[] r1 = { 1L, "Margaret" };
-        Object[] r1a = { 101L, 1L, "Meg" };
-        Object[] r1b = { 102L, 1L, "Jo" };
-        Object[] r2 = { 2L, "Josephine" };
-        writeRow(parent, r1);
-        writeRow(child, r1a);
-        writeRow(child, r1b);
-        writeRow(parent, r2);
-
-        Row[] expected = {
-            new TestRow(parentType, r1),
-            new TestRow(childType, r1a),
-            new TestRow(childType, r1b),
-            new TestRow(parentType, r2)
-        };
-        compareRows(expected, adapter.newGroupCursor(parentType.table().getGroup()));
-
-        txnService().commitTransaction(session());
+          "CREATE TABLE parent(id INT PRIMARY KEY NOT NULL, s VARCHAR(128)) STORAGE_FORMAT tuple(key_only = true);");
     }
 
 }

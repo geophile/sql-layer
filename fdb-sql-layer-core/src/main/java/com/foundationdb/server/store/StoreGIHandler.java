@@ -117,7 +117,7 @@ class StoreGIHandler<SType extends AbstractStore,SDType,SSDType extends StoreSto
             int nFields = irc.getLength();
             int f = 0;
             while(f < nFields) {
-                assert irc.isInRowData(f);
+                assert irc.isInRow(f);
                 assert ! irc.isInHKey(f);
                 if(f == firstSpatialColumn) {
                     copyZValueToIndexRow(groupIndex, row, irc);

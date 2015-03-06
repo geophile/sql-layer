@@ -18,7 +18,7 @@
 package com.foundationdb.server.types.common.types;
 
 import com.foundationdb.server.error.AkibanInternalException;
-import com.foundationdb.server.rowdata.ConversionHelperBigDecimal;
+import com.foundationdb.server.types.ConversionHelperBigDecimal;
 import com.foundationdb.server.types.*;
 import com.foundationdb.server.types.aksql.AkCategory;
 import com.foundationdb.server.types.common.BigDecimalWrapper;
@@ -31,8 +31,6 @@ import com.foundationdb.sql.types.TypeId;
 import com.foundationdb.util.AkibanAppender;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.sql.Types;
 
 public class TBigDecimal extends TClassBase {
@@ -123,11 +121,6 @@ public class TBigDecimal extends TClassBase {
     protected TBigDecimal(TBundle bundle, String name, int defaultVarcharLen){
         super(bundle.id(), name, AkCategory.DECIMAL, DecimalAttribute.class, NumericFormatter.FORMAT.BIGDECIMAL, 1, 1, -1,
                 UnderlyingType.BYTES, MParsers.DECIMAL, defaultVarcharLen);
-    }
-
-    @Override
-    public Object formatCachedForNiceRow(ValueSource source) {
-        return ((BigDecimalWrapper)source.getObject()).asBigDecimal();
     }
 
     @Override

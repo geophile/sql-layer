@@ -21,7 +21,7 @@ import com.foundationdb.ais.model.AkibanInformationSchema;
 import com.foundationdb.ais.model.Column;
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.types.mcompat.mtypes.MTypesTranslator;
 import com.foundationdb.server.types.value.ValueSources;
 import com.foundationdb.util.Strings;
@@ -55,7 +55,7 @@ public final class CsvRowReaderTest {
     @Test
     public void reader() throws Exception {
         SchemaFactory schemaFactory = new SchemaFactory("test");
-        AkibanInformationSchema ais = schemaFactory.aisWithRowDefs(DDL);
+        AkibanInformationSchema ais = schemaFactory.aisWithTableStatus(DDL);
         Table t1 = ais.getTable("test", "t1");
         InputStream istr = new ByteArrayInputStream(Strings.join(CSV).getBytes("UTF-8"));
         List<Column> columns = new ArrayList<>(3);

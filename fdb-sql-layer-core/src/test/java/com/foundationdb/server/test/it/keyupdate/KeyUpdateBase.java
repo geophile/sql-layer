@@ -20,9 +20,7 @@ package com.foundationdb.server.test.it.keyupdate;
 import com.foundationdb.ais.model.Column;
 import com.foundationdb.ais.model.Index;
 import com.foundationdb.qp.row.Row;
-import com.foundationdb.qp.row.ValuesHolderRow;
 import com.foundationdb.qp.rowtype.RowType;
-import com.foundationdb.qp.util.SchemaCache;
 import com.foundationdb.server.test.it.ITBase;
 import com.foundationdb.server.types.value.Value;
 import com.foundationdb.util.tap.Tap;
@@ -42,7 +40,7 @@ public abstract class KeyUpdateBase extends ITBase {
     public final void before() throws Exception
     {
         testStore = new TestStore(store());
-        rowDefsToCounts = new TreeMap<>();
+        tableIDToCounts = new TreeMap<>();
         createSchema();
         confirmColumns();
         populateTables();
@@ -75,9 +73,9 @@ public abstract class KeyUpdateBase extends ITBase {
         transactionally(new Callable<Void>() {
             public Void call() throws Exception {
                 testStore.writeRow(session(), row);
-                Integer oldCount = rowDefsToCounts.get(row.rowType().table().getTableId());
+                Integer oldCount = tableIDToCounts.get(row.rowType().table().getTableId());
                 oldCount = (oldCount == null) ? 1 : oldCount+1;
-                rowDefsToCounts.put(row.rowType().table().getTableId(), oldCount);
+                tableIDToCounts.put(row.rowType().table().getTableId(), oldCount);
                 return null;
             }
         });
@@ -98,9 +96,9 @@ public abstract class KeyUpdateBase extends ITBase {
         transactionally(new Callable<Void>() {
             public Void call() throws Exception {
                 testStore.deleteRow(session(), row);
-                Integer oldCount = rowDefsToCounts.get(row.rowType().table().getTableId());
+                Integer oldCount = tableIDToCounts.get(row.rowType().table().getTableId());
                 assertNotNull(oldCount);
-                rowDefsToCounts.put(row.rowType().table().getTableId(), oldCount - 1);
+                tableIDToCounts.put(row.rowType().table().getTableId(), oldCount - 1);
                 return null;
             }
         });
@@ -108,7 +106,7 @@ public abstract class KeyUpdateBase extends ITBase {
 
     private int countAllRows() {
         int total = 0;
-        for (Integer count : rowDefsToCounts.values()) {
+        for (Integer count : tableIDToCounts.values()) {
             total += count;
         }
         return total;
@@ -170,7 +168,7 @@ public abstract class KeyUpdateBase extends ITBase {
     }
 
     private int countRows(RowType rowType) {
-        return rowDefsToCounts.get(rowType.table().getTableId());
+        return tableIDToCounts.get(rowType.table().getTableId());
     }
 
     private Index index(RowType rowType, String indexName) {
@@ -244,9 +242,9 @@ public abstract class KeyUpdateBase extends ITBase {
     }
 
     /**
-     * Given a list of records, a RowDef and a list of columns, extracts the index entries.
+     * Given a list of records, a RowType and a list of columns, extracts the index entries.
      * @param records the records to take entries from
-     * @param rowDef the rowdef of records to look at
+     * @param rowType the rowType of records to look at
      * @param columns a union of either Integer (the column ID) or HKeyElement.
      * Any other types will throw a RuntimeException
      * @return a list representing indexes of these records
@@ -443,7 +441,7 @@ public abstract class KeyUpdateBase extends ITBase {
     abstract protected List<List<Object>> orderWhenIndex(List<TreeRecord> records);
 
     protected TestStore testStore;
-    protected Map<Integer,Integer> rowDefsToCounts;
+    protected Map<Integer,Integer> tableIDToCounts;
 
     protected static class NullSeparatorColumn {}
 }

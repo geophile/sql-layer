@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.foundationdb.server.rowdata;
+package com.foundationdb.server.types;
 
-import com.foundationdb.server.AkServerUtil;
 import com.foundationdb.server.types.common.BigDecimalWrapperImpl;
 import com.foundationdb.util.AkibanAppender;
 
@@ -25,46 +24,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public final class ConversionHelperBigDecimal {
-
-    // "public" methods (though still only available within-package)
-
-    /**
-     * Decodes the field from the given RowData into the given StringBuilder.
-     * @param fieldDef the fieldDef whose type is a decimal
-     * @param from the underlying byte array
-     * @param locationAndOffset the byte's location and offset, packed as RowData packs them
-     * @param appender the appender to use
-     * @throws NullPointerException if any arguments are null
-     * @throws ValueSourceException if the string can't be parsed to a BigDecimal
-     */
-    public static void decodeToString(FieldDef fieldDef, byte[] from, long locationAndOffset, AkibanAppender appender) {
-        final int precision = fieldDef.getTypeParameter1().intValue();
-        final int scale = fieldDef.getTypeParameter2().intValue();
-        final int location = (int) locationAndOffset;
-
-        try {
-            decodeToString(from, location, precision, scale, appender);
-        } catch (NumberFormatException e) {
-            StringBuilder errSb = new StringBuilder();
-            errSb.append("in field[");
-            errSb.append(fieldDef.getRowDef().getRowDefId()).append('.').append(fieldDef.getFieldIndex());
-            errSb.append(" decimal(");
-            errSb.append(fieldDef.getTypeParameter1()).append(',').append(fieldDef.getTypeParameter2());
-            errSb.append(")] 0x");
-            final int bytesLen = (int) (locationAndOffset >>> 32);
-            AkServerUtil.hex(AkibanAppender.of(errSb), from, location, bytesLen);
-            errSb.append(": ").append( e.getMessage() );
-            throw new RowDataException(errSb.toString(), e);
-        }
-    }
-
-
-    public static int fromObject(FieldDef fieldDef, BigDecimal value, byte[] dest, int offset) {
-        final int declPrec = fieldDef.getTypeParameter1().intValue();
-        final int declScale = fieldDef.getTypeParameter2().intValue();
-
-        return fromObject(value, dest, offset, declPrec, declScale);
-    }
 
     public static byte[] bytesFromObject(BigDecimal value, int declPrec, int declScale) {
         final int declIntSize = calcBinSize(declPrec - declScale);
@@ -189,7 +148,7 @@ public final class ConversionHelperBigDecimal {
     }
 
     public static String normalizeToString(BigDecimal value, int declPrec, int declScale) {
-        // First, we have to turn the value into one that fits the FieldDef's constraints.
+        // First, we have to turn the value into one that fits the Column's constraints.
         int valuePrec = BigDecimalWrapperImpl.sqlPrecision(value);
         int valueScale = BigDecimalWrapperImpl.sqlScale(value);
         assert valueScale >= 0 : value;

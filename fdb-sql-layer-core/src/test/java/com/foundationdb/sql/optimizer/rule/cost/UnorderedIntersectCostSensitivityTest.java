@@ -44,7 +44,7 @@ public class UnorderedIntersectCostSensitivityTest
     public void loadSchema() throws Exception
     {
         ais = OptimizerTestBase.parseSchema(new File(RESOURCE_DIR, "schema.ddl"));
-        RulesTestHelper.ensureRowDefs(ais);
+        RulesTestHelper.ensureFieldAssociations(ais);
         tree = new TableTree();
         schema = new Schema(ais);
         t = table("t");

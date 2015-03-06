@@ -39,7 +39,6 @@ public class FDBProtobufStorageDescription extends TupleStorageDescription imple
 {
     private ProtobufRowFormat.Type formatType;
     private FileDescriptorProto fileProto;
-    private transient ProtobufRowDataConverter rowDataConverter;
     private transient ProtobufRowConverter rowConverter;
 
     public FDBProtobufStorageDescription(HasStorage forObject, String storageFormat) {
@@ -96,13 +95,6 @@ public class FDBProtobufStorageDescription extends TupleStorageDescription imple
         fileProto = validateAndGenerate(object, formatType, fileProto, output);
     }
 
-    public synchronized ProtobufRowDataConverter ensureRowDataConverter() {
-        if (rowDataConverter == null) {
-            rowDataConverter = buildRowDataConverter(object, fileProto);
-        }
-        return rowDataConverter;
-    }
-    
     public synchronized ProtobufRowConverter ensureRowConverter() {
         if (rowConverter == null) {
             rowConverter = buildRowConverter(object, fileProto);
@@ -126,7 +118,7 @@ public class FDBProtobufStorageDescription extends TupleStorageDescription imple
         try {
             msg = DynamicMessage.parseFrom(rowConverter.getMessageType(), storeData.rawValue);
         } catch (InvalidProtocolBufferException ex) {
-            ProtobufReadException nex = new ProtobufReadException(rowDataConverter.getMessageType().getName(), ex.getMessage());
+            ProtobufReadException nex = new ProtobufReadException(rowConverter.getMessageType().getName(), ex.getMessage());
             nex.initCause(ex);
             throw nex;
         }

@@ -42,17 +42,14 @@ import java.util.Map;
  * </pre>
  *
  * <p>
- *     The above directory is used to store auto-inc, unique and/or row count
- *     information on a per-table basis. Each key is formed by pre-pending the
- *     directory prefix with the primary key's prefix and  the string
- *     "autoInc", "unique" or "rowCount". The auto-inc and unique values are
- *     {@link Tuple} encoded longs and the row count is a little-endian encoded
+ *     The above directory is used to store row count information on a per-table basis.
+ *     Each key is formed by pre-pending the directory prefix with the primary key's
+ *     prefix and  the string "rowCount". The count is a little-endian encoded
  *     long (for {@link Transaction#mutate} usage).
  * </p>
  */
 public class FDBTableStatusCache implements TableStatusCache {
     private static final List<String> TABLE_STATUS_DIR_PATH = Arrays.asList("tableStatus");
-    private static final byte[] UNIQUE_PACKED = Tuple2.from("unique").pack();
     private static final byte[] ROW_COUNT_PACKED = Tuple2.from("rowCount").pack();
 
     private final FDBTransactionService txnService;
@@ -80,11 +77,6 @@ public class FDBTableStatusCache implements TableStatusCache {
             virtualTableStatusMap.put(tableID, status);
         }
         return status;
-    }
-
-    @Override
-    public synchronized void detachAIS() {
-        //TODO: Nothing
     }
 
     @Override
@@ -157,12 +149,6 @@ public class FDBTableStatusCache implements TableStatusCache {
         @Override
         public int getTableID() {
             return tableID;
-        }
-
-        @Override
-        public void setRowCount(Session session, long rowCount) {
-            TransactionState txn = txnService.getTransaction(session);
-            txn.setBytes(rowCountKey, packForAtomicOp(rowCount));
         }
 
         private void clearState(Session session) {

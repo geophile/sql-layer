@@ -24,27 +24,22 @@ import com.foundationdb.sql.parser.StorageFormatNode;
 
 public class FDBStorageFormat extends StorageFormat<FDBStorageDescription>
 {
-    public final static String identifier = "rowdata";
+    // Cannot be used externally
+    public final static String FORMAT_NAME = null;
 
     private FDBStorageFormat() {
     }
 
     public static void register(StorageFormatRegistry registry) {
-        registry.registerStorageFormat(FDBProtobuf.prefixBytes, identifier, FDBStorageDescription.class, new FDBStorageFormat());
+        registry.registerStorageFormat(FDBProtobuf.prefixBytes, FORMAT_NAME, FDBStorageDescription.class, new FDBStorageFormat());
     }
 
     public FDBStorageDescription readProtobuf(Storage pbStorage, HasStorage forObject, FDBStorageDescription storageDescription) {
         if (storageDescription == null) {
-            storageDescription = new FDBStorageDescription(forObject, identifier);
+            // Derived should have already instantiated
+            throw new IllegalStateException("null storageDescription");
         }
         storageDescription.setPrefixBytes(pbStorage.getExtension(FDBProtobuf.prefixBytes).toByteArray());
         return storageDescription;
     }
-
-    @Override
-    public  FDBStorageDescription parseSQL(StorageFormatNode node, HasStorage forObject) {
-        FDBStorageDescription storageDescription = new FDBStorageDescription(forObject, identifier);
-        return storageDescription;
-    }
-
 }

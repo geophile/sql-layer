@@ -18,27 +18,12 @@
 package com.foundationdb.server.store;
 
 import com.foundationdb.ais.model.HasStorage;
-import com.foundationdb.ais.model.Table;
-import com.foundationdb.qp.row.Row;
-import com.foundationdb.qp.row.ValuesHolderRow;
-import com.foundationdb.qp.rowtype.RowType;
-import com.foundationdb.qp.rowtype.Schema;
-import com.foundationdb.qp.storeadapter.RowDataCreator;
-import com.foundationdb.server.api.dml.scan.NiceRow;
-import com.foundationdb.server.rowdata.FieldDef;
-import com.foundationdb.server.rowdata.RowData;
-import com.foundationdb.server.rowdata.RowDataExtractor;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.store.format.FDBStorageDescription;
-import com.foundationdb.server.types.value.Value;
-import com.foundationdb.server.types.value.ValueTargets;
 import com.foundationdb.tuple.ByteArrayUtil;
 import com.foundationdb.tuple.Tuple2;
 import com.persistit.Key;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,41 +103,5 @@ public class FDBStoreDataHelper
         storeData.persistitValue.putEncodedBytes(storeData.rawValue, 0, storeData.rawValue.length);
     }
 
-    public static Row expandRow (Schema schema, FDBStoreData storeData) {
-        RowData rowData = new RowData();
-        rowData.reset(storeData.rawValue);
-        rowData.prepareRow(0);
-
-        Table table = schema.ais().getTable(rowData.getRowDefId());
-        RowDef rowDef = table.rowDef();
-        RowDataExtractor extractor = new RowDataExtractor(rowData, rowDef);
-        List<Value> values = new ArrayList<>(rowDef.getFieldCount());
-        
-        RowType rowType = schema.tableRowType(table);
-        assert rowDef.getFieldCount() == rowType.nFields() : rowData;
-        
-        for (int i = 0; i < rowDef.getFieldCount(); i++) {
-            FieldDef fieldDef = rowDef.getFieldDef(i);
-            Value value = new Value (rowType.typeAt(i));
-            ValueTargets.copyFrom(extractor.getValueSource(fieldDef), value);
-            values.add(value);
-        }
-        ValuesHolderRow row = new ValuesHolderRow(rowType, values);
-        return row;
-    }
-    
-
-    public static void packRow(Row row, FDBStoreData storeData) {
-        RowDef rowDef = row.rowType().table().rowDef();
-        RowDataCreator creator = new RowDataCreator();
-        NiceRow niceRow = new NiceRow(rowDef.getRowDefId(), rowDef);
-        int fields = rowDef.getFieldCount();
-        for(int i = 0; i < fields; ++i) {
-            creator.put(row.value(i), niceRow, i);
-        }
-        RowData rowData = niceRow.toRowData();
-        storeData.rawValue = Arrays.copyOfRange(rowData.getBytes(), rowData.getRowStart(), rowData.getRowEnd());
-    }
     private static final Logger logger = LoggerFactory.getLogger(FDBStoreDataHelper.class);
-
 }

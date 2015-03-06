@@ -18,8 +18,6 @@
 package com.foundationdb.server.test.it.pstraverse;
 
 import com.foundationdb.ais.model.Index;
-import com.foundationdb.qp.row.Row;
-import com.foundationdb.server.api.dml.scan.NewRow;
 import com.foundationdb.server.error.InvalidOperationException;
 import com.foundationdb.server.service.transaction.TransactionService.CloseableTransaction;
 import com.foundationdb.server.test.it.ITBase;
@@ -108,8 +106,8 @@ public abstract class KeysBase extends ITBase {
         );
     }
 
-    protected void traversePK(int rowDefId, List<?>... expectedIndexes) throws Exception {
-        Index pkIndex = getRowDef(rowDefId).getPKIndex();
+    protected void traversePK(int tableID, List<?>... expectedIndexes) throws Exception {
+        Index pkIndex = getTable(tableID).getPrimaryKeyIncludingInternal().getIndex();
 
         try(CloseableTransaction txn = txnService().beginCloseableTransaction(session())) {
             CollectingIndexKeyVisitor visitor = new CollectingIndexKeyVisitor();

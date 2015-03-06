@@ -34,8 +34,6 @@ import com.foundationdb.ais.util.TableChange;
 import com.foundationdb.qp.operator.QueryContext;
 import com.foundationdb.server.error.NoSuchTableException;
 import com.foundationdb.server.error.NoSuchTableIdException;
-import com.foundationdb.server.error.RowDefNotFoundException;
-import com.foundationdb.server.rowdata.RowDef;
 import com.foundationdb.server.service.dxl.OnlineDDLMonitor;
 import com.foundationdb.server.service.session.Session;
 import com.foundationdb.server.store.format.StorageFormatRegistry;
@@ -187,24 +185,6 @@ public interface DDLFunctions {
      * @throws NoSuchTableException if the tableName can not be found in the session list
      */
     public Table getTable(Session session, TableName tableName) throws NoSuchTableException;
-
-    /**
-     * Get an integer version of the generation of the AIS. Upon change this is only guaranteed to be different,
-     * increasing or decreasing is unspecified, from the last.
-     * @see #getGeneration
-     */
-    int getGenerationAsInt(Session session);
-
-    /**
-     * Get the generation number of the AIS. This value is unique and increasing increases for each change.
-     */
-    long getGeneration(Session session);
-
-    /**
-     * Get the oldest AIS generation still in use, not necessarily the oldest that could possibly be used.
-     * Should only be used in non-transactional scenarios, e.g. clearing caches.
-     */
-    long getOldestActiveGeneration();
     
     /**
      * Get all the AIS generations still in use.

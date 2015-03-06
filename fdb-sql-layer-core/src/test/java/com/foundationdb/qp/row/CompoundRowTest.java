@@ -29,7 +29,7 @@ import com.foundationdb.ais.model.Index;
 import com.foundationdb.ais.model.Table;
 import com.foundationdb.ais.model.TestAISBuilder;
 import com.foundationdb.qp.rowtype.TableRowType;
-import com.foundationdb.server.rowdata.SchemaFactory;
+import com.foundationdb.server.SchemaFactory;
 import com.foundationdb.server.types.service.TestTypesRegistry;
 
 public class CompoundRowTest {
@@ -124,7 +124,7 @@ public class CompoundRowTest {
         builder.groupingIsComplete();
         
         SchemaFactory factory = new SchemaFactory ("schema");
-        factory.buildRowDefs(builder.akibanInformationSchema());
+        factory.buildTableStatusAndFieldAssociations(builder.akibanInformationSchema());
         return new Schema(builder.akibanInformationSchema());
     }
     

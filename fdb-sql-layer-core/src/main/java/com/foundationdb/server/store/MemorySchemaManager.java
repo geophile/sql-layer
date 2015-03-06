@@ -31,10 +31,8 @@ import com.foundationdb.ais.model.TableName;
 import com.foundationdb.ais.model.validation.AISValidations;
 import com.foundationdb.ais.protobuf.ProtobufReader;
 import com.foundationdb.ais.protobuf.ProtobufWriter;
-import com.foundationdb.qp.virtualadapter.VirtualAdapter;
-import com.foundationdb.server.TableStatus;
 import com.foundationdb.server.MemoryTableStatusCache;
-import com.foundationdb.server.rowdata.RowDefBuilder;
+import com.foundationdb.server.TableStatusCache;
 import com.foundationdb.server.service.config.ConfigurationService;
 import com.foundationdb.server.service.session.Session;
 import com.foundationdb.server.service.session.SessionService;
@@ -148,6 +146,11 @@ public class MemorySchemaManager extends AbstractSchemaManager
     //
 
     @Override
+    protected TableStatusCache getTableStatusCache() {
+        return tableStatusCache;
+    }
+
+    @Override
     protected NameGenerator getNameGenerator(Session session) {
         return nameGenerator;
     }
@@ -163,7 +166,7 @@ public class MemorySchemaManager extends AbstractSchemaManager
         if(localAIS == null) {
             synchronized(this) {
                 if(curAIS == null) {
-                    curAIS = loadFromStorage(txn);
+                    curAIS = loadFromStorage(session, txn);
                     nameGenerator.mergeAIS(curAIS);
                 }
                 localAIS = curAIS;
@@ -171,7 +174,7 @@ public class MemorySchemaManager extends AbstractSchemaManager
         }
         long localGen = getCurrentAISGeneration(txn);
         if(localGen != localAIS.getGeneration()) {
-            localAIS = loadFromStorage(txn);
+            localAIS = loadFromStorage(session, txn);
             synchronized(this) {
                 if(localAIS.getGeneration() > curAIS.getGeneration()) {
                     curAIS = localAIS;
@@ -190,7 +193,7 @@ public class MemorySchemaManager extends AbstractSchemaManager
         for(String schema : schemas) {
             storeProtobuf(txn, join(smBytes, PROTOBUF_STR_BYTES), newAIS, schema);
         }
-        buildRowDefs(newAIS);
+        buildTableStatusAndFieldAssociations(session, newAIS);
     }
 
     @Override
@@ -298,7 +301,7 @@ public class MemorySchemaManager extends AbstractSchemaManager
             // Reader will have two copies of affected schemas, skip second (i.e. non-online)
             AkibanInformationSchema newAIS = finishReader(reader);
             validateAndFreeze(txn, newAIS, generation);
-            buildRowDefs(newAIS);
+            buildTableStatusAndFieldAssociations(session, newAIS);
             onlineCache.onlineToAIS.put(onlineID, newAIS);
 
             // Load ChangeSets
@@ -468,22 +471,6 @@ public class MemorySchemaManager extends AbstractSchemaManager
         }
     }
 
-    private void buildRowDefs(AkibanInformationSchema ais) {
-        tableStatusCache.detachAIS();
-        for(final Table table : ais.getTables().values()) {
-            final TableStatus status;
-            if(table.isVirtual()) {
-                status = tableStatusCache.getOrCreateVirtualTableStatus(table.getTableId(),
-                                                                        VirtualAdapter.getFactory(table));
-            } else {
-                status = tableStatusCache.createTableStatus(table);
-            }
-            table.tableStatus(status);
-        }
-        RowDefBuilder rowDefBuilder = new RowDefBuilder(null/*session*/, ais, tableStatusCache);
-        rowDefBuilder.build();
-    }
-
     private long getCurrentAISGeneration(MemoryTransaction txn) {
         byte[] key = join(smBytes, GENERATION_STR_BYTES);
         byte[] value = txn.get(key);
@@ -505,13 +492,13 @@ public class MemorySchemaManager extends AbstractSchemaManager
         return txnService.getTransaction(session);
     }
 
-    private AkibanInformationSchema loadFromStorage(MemoryTransaction txn) {
+    private AkibanInformationSchema loadFromStorage(Session session, MemoryTransaction txn) {
         ProtobufReader reader = newProtobufReader();
         loadProtobufChildren(txn, reader, join(smBytes, PROTOBUF_STR_BYTES), Collections.<String>emptyList());
         finishReader(reader);
         validateAndFreeze(txn, reader.getAIS(), getCurrentAISGeneration(txn));
         AkibanInformationSchema ais = reader.getAIS();
-        buildRowDefs(ais);
+        buildTableStatusAndFieldAssociations(session, ais);
         return ais;
     }
 
