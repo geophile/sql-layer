@@ -971,16 +971,20 @@ public class FDBStore extends AbstractStore<FDBStore,FDBStoreData,FDBStorageDesc
     private long updateSequenceCache(Session session, Sequence s) {
         Transaction tr = txnService.getTransaction(session).getTransaction();
         byte[] prefixBytes = prefixBytes(s);
-        byte[] byteValue = tr.get(prefixBytes).get();
         final long rawValue;
-        if(byteValue != null) {
-            Tuple2 tuple = Tuple2.fromBytes(byteValue);
-            rawValue = tuple.getLong(0);
-        } else {
-            rawValue = 1;
+        try {
+            byte[] byteValue = tr.get(prefixBytes).get();
+            if(byteValue != null) {
+                Tuple2 tuple = Tuple2.fromBytes(byteValue);
+                rawValue = tuple.getLong(0);
+            } else {
+                rawValue = 1;
+            }
+            tr.set(prefixBytes, Tuple2.from(rawValue + sequenceCacheSize).pack());
         }
-        tr.set(prefixBytes, Tuple2.from(rawValue + sequenceCacheSize).pack());
-
+        catch (RuntimeException ex) {
+            throw FDBAdapter.wrapFDBException(session, ex);
+        }
         Map<Object, SequenceCache> sessionMap = session.get(SEQ_UPDATES_KEY);
         if(sessionMap == null) {
             txnService.addCallback(session, TransactionService.CallbackType.COMMIT, SEQUENCE_UPDATES_PUT_CALLBACK);
