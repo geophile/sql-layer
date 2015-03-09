@@ -447,7 +447,7 @@ public enum ErrorCode {
     //52008
     //52009
     //5200A
-    TAP_BEAN_FAIL           ("52", "00B", Importance.ERROR, TapBeanFailureException.class),
+    //5200B
     //5200C
     //5200D
     QUERY_LOG_CLOSE_FAIL    ("52", "00E", Importance.ERROR, QueryLogCloseException.class),
