@@ -23,13 +23,11 @@ import com.foundationdb.sql.server.ServerStatementCache;
 import com.foundationdb.server.error.InvalidPortException;
 import com.foundationdb.server.service.ServiceManager;
 import com.foundationdb.server.service.metrics.LongMetric;
-import com.foundationdb.server.service.monitor.MonitorStage;
 import com.foundationdb.server.service.monitor.ServerMonitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -44,7 +42,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.security.Principal;
 
 import javax.security.auth.Subject;
@@ -257,24 +254,6 @@ public class PostgresServer implements Runnable, ServerMonitor {
     
     public synchronized Collection<PostgresServerConnection> getConnections() {
         return new ArrayList<>(connections.values());
-    }
-
-    public String getSqlString(int sessionId) {
-        return getConnection(sessionId).getSessionMonitor().getCurrentStatement();
-    }
-    
-    public String getRemoteAddress(int sessionId) {
-        return getConnection(sessionId).getSessionMonitor().getRemoteAddress();
-    }
-
-    public void cancelQuery(int sessionId) {
-        getConnection(sessionId).cancelQuery(null, "JMX");
-    }
-
-    public void killConnection(int sessionId) {
-        PostgresServerConnection conn = getConnection(sessionId);
-        conn.cancelQuery("your session being disconnected", "JMX");
-        conn.waitAndStop();
     }
 
     void cleanStatementCaches(long newGeneration) {

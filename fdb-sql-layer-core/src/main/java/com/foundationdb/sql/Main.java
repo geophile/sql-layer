@@ -32,14 +32,11 @@ import com.foundationdb.server.error.StartupFailureException;
 import com.foundationdb.server.service.Service;
 import com.foundationdb.server.service.ServiceManager;
 
-import javax.management.ObjectName;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
@@ -67,7 +64,7 @@ public class Main implements Service, LayerInfoInterface
     private static final String PID_FILE_NAME = System.getProperty("fdbsql.pidfile");
     private static final boolean IS_STD_TO_LOG = Boolean.parseBoolean(System.getProperty("fdbsql.std_to_log", "true"));
 
-    private static volatile ShutdownMXBeanImpl shutdownBean = null;
+    private static volatile ServiceManager serviceManager;
 
     private final ConfigurationService config;
     private GCMonitor gcMonitor;
@@ -112,30 +109,6 @@ public class Main implements Service, LayerInfoInterface
         return VERSION_INFO;
     }
 
-    public interface ShutdownMXBean {
-        public void shutdown();
-    }
-
-    private static class ShutdownMXBeanImpl implements ShutdownMXBean {
-        private static final String BEAN_NAME = "com.foundationdb:type=SHUTDOWN";
-        private final ServiceManager sm;
-
-        public ShutdownMXBeanImpl(ServiceManager sm) {
-            this.sm = sm;
-        }
-
-        @Override
-        public void shutdown() {
-            try {
-                if(sm != null) {
-                    sm.stopServices();
-                }
-            } catch (Exception e) {
-                LOG.error("Problem stopping services", e);
-            }
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         if(IS_STD_TO_LOG) {
             System.setErr(new PrintStream(LoggingStream.forError(LOG), true));
@@ -166,24 +139,29 @@ public class Main implements Service, LayerInfoInterface
     }
 
     private static void doStartup() throws Exception {
-        final ServiceManager serviceManager = new GuicedServiceManager();
-
-        Main.shutdownBean = new ShutdownMXBeanImpl(serviceManager);
+        Main.serviceManager = new GuicedServiceManager();
 
         // JVM shutdown hook.
         // Register before startServices() so services are still brought down on startup error.
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                shutdownBean.shutdown();
+                doShutdown();
             }
         }, "ShutdownHook"));
 
         // Bring system up
         serviceManager.startServices();
+    }
 
-        ObjectName name = new ObjectName(ShutdownMXBeanImpl.BEAN_NAME);
-        ManagementFactory.getPlatformMBeanServer().registerMBean(shutdownBean, name);
+    private static void doShutdown() {
+        try {
+            if(serviceManager != null) {
+                serviceManager.stopServices();
+            }
+        } catch (Exception e) {
+            LOG.error("Problem stopping services", e);
+        }
     }
 
     private static void writePid() throws IOException {
@@ -225,8 +203,7 @@ public class Main implements Service, LayerInfoInterface
     @SuppressWarnings("unused") // Called by procrun
     public static void procrunStop(String[] args) throws Exception {
         boolean jvmMode = isProcrunJVMMode(args);
-        // Stop server from another thread.
-        shutdownBean.shutdown();
+        doShutdown();
         if(jvmMode) {
             PROCRUN_SEMAPHORE.release();
         }

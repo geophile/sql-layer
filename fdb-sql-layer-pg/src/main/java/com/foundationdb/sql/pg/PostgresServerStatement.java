@@ -17,12 +17,8 @@
 package com.foundationdb.sql.pg;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
 import com.foundationdb.sql.optimizer.plan.CostEstimate;
 import com.foundationdb.sql.parser.ParameterNode;
