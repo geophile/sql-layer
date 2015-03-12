@@ -11,7 +11,7 @@ Name:       fdb-sql-layer
 Version:    %{_fdb_sql_version}
 Release:    %{_fdb_sql_release}.%{_el_version}
 Group:      Applications/Databases
-License:    AGPLv3
+License:    MIT
 URL:        https://foundationdb.com/layers/sql
 Packager:   FoundationDB <distribution@foundationdb.com>
 Summary:    FoundationDB SQL Layer
